@@ -1,4 +1,5 @@
 import logging
+import os
 from telegram.ext import ApplicationBuilder, CallbackQueryHandler
 from bot import get_conversation_handler, lidar_botoes
 from scheduler import rotina_busca_vagas
@@ -9,8 +10,8 @@ logging.basicConfig(
     level=logging.INFO
 )
 
-# ⚠️ Você deve colocar o TOKEN do seu Bot no Telegram aqui:
-TOKEN = "8868236529:AAEIesQl5720YXKze5X-BlQ7Jjyp2aP6JW0"
+# Puxa o Token da Variável de Ambiente configurada no Render (seguro)
+TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 
 def main():
     # 1. Iniciar Banco de Dados
