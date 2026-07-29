@@ -1,7 +1,6 @@
 import asyncio
 import urllib.parse
 import requests
-import re
 import unicodedata
 from bs4 import BeautifulSoup
 
@@ -10,94 +9,77 @@ def normalizar_texto(texto: str) -> str:
     texto = "".join(char for char in texto if not unicodedata.combining(char))
     return texto.lower()
 
-def extrair_vagas_google(html: str, plataforma_nome: str, dominio: str, termo: str, cidade: str):
-    vagas = []
-    # Usar regex e bs4 para encontrar links reais
-    soup = BeautifulSoup(html, 'html.parser')
-    links = soup.find_all('a', href=True)
-    
-    for link_tag in links:
-        href = link_tag['href']
-        if f"site:{dominio}" not in href and "/url?q=" in href and dominio in href:
-            url_limpa = urllib.parse.unquote(href.split("/url?q=")[1].split("&")[0])
-            
-            # Pega o titulo (normalmente dentro de uma h3 no google)
-            titulo_tag = link_tag.find('h3')
-            if titulo_tag:
-                titulo = titulo_tag.text
-                
-                # Ignorar links genericos que não parecem vagas
-                if "vagas" in url_limpa or "job" in url_limpa or "vaga" in url_limpa:
-                    vagas.append({
-                        'plataforma': plataforma_nome,
-                        'titulo': titulo.split(" - ")[0], # Limpar titulo longo
-                        'link': url_limpa,
-                        'cidade': cidade,
-                        'termo': termo
-                    })
-    
-    # Remover duplicados
-    vagas_unicas = []
-    links_vistos = set()
-    for v in vagas:
-        if v['link'] not in links_vistos:
-            links_vistos.add(v['link'])
-            vagas_unicas.append(v)
-            
-    return vagas_unicas[:3]
-
 async def buscar_vagas_por_parametros(estado: str, cidade: str, termos_busca: list, raio: int):
     """
     Scraper ultra-leve usando BeautifulSoup e Requests.
-    Busca vagas indexadas no Sólides, Plooral e Jobbol de forma inteligente e rápida.
+    Busca vagas indexadas diretamente no Vagas.com.br (funciona nativamente sem bloqueios).
     """
     vagas_encontradas = []
     
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
     }
 
     loop = asyncio.get_event_loop()
 
     for termo in termos_busca:
-        plataformas = [
-            ("Sólides", "vagas.solides.com.br/vaga"),
-            ("Plooral", "plooral.com/job"),
-            ("Jobbol", "jobbol.com.br/vagas")
-        ]
+        termo_formatado = urllib.parse.quote(normalizar_texto(termo).replace(" ", "-"))
+        cidade_formatada = urllib.parse.quote(normalizar_texto(cidade).replace(" ", "-"))
         
-        for nome_plat, dominio in plataformas:
-            try:
-                # Query no Google restringindo ao site e região
-                query = f'site:{dominio} "{termo}" "{cidade}" "{estado}"'
-                url_google = f"https://www.google.com/search?q={urllib.parse.quote(query)}"
+        try:
+            url_vagas = f"https://www.vagas.com.br/vagas-de-{termo_formatado}-em-{cidade_formatada}"
+            
+            resposta = await loop.run_in_executor(None, lambda: requests.get(url_vagas, headers=headers, timeout=10))
+            
+            if resposta.status_code == 200:
+                soup = BeautifulSoup(resposta.text, 'html.parser')
+                cards = soup.find_all('a', class_='link-detalhes-vaga')
                 
-                resposta = await loop.run_in_executor(None, lambda: requests.get(url_google, headers=headers, timeout=10))
-                
-                if resposta.status_code == 200:
-                    vagas_plat = extrair_vagas_google(resposta.text, nome_plat, dominio.split('/')[0], termo, cidade)
-                    vagas_encontradas.extend(vagas_plat)
-            except Exception as e:
-                print(f"Erro ao buscar na {nome_plat}: {e}")
-
-        # Se não achou NADA em nenhuma plataforma pra esse termo, manda uma vaga genérica de Catho
+                for card in cards[:3]:
+                    titulo = card.text.strip()
+                    link = card.get('href')
+                    if link and "/vagas/" in link:
+                        vagas_encontradas.append({
+                            'plataforma': 'Vagas.com.br',
+                            'titulo': titulo,
+                            'link': f"https://www.vagas.com.br{link}",
+                            'cidade': cidade,
+                            'termo': termo
+                        })
+        except Exception as e:
+            print(f"Erro ao buscar no Vagas.com.br: {e}")
+            
+        # Tenta uma busca mais genérica (sem cidade) se não achar nada
         if len(vagas_encontradas) == 0:
             try:
-                query_catho = f'site:catho.com.br/vagas "{termo}" "{cidade}" "{estado}"'
-                url_catho = f"https://www.google.com/search?q={urllib.parse.quote(query_catho)}"
-                resposta = await loop.run_in_executor(None, lambda: requests.get(url_catho, headers=headers, timeout=10))
+                url_vagas_gen = f"https://www.vagas.com.br/vagas-de-{termo_formatado}"
+                resposta = await loop.run_in_executor(None, lambda: requests.get(url_vagas_gen, headers=headers, timeout=10))
+                
                 if resposta.status_code == 200:
-                    vagas_catho = extrair_vagas_google(resposta.text, "Catho", "catho.com.br", termo, cidade)
-                    vagas_encontradas.extend(vagas_catho)
+                    soup = BeautifulSoup(resposta.text, 'html.parser')
+                    cards = soup.find_all('a', class_='link-detalhes-vaga')
+                    
+                    for card in cards[:2]:
+                        titulo = card.text.strip()
+                        link = card.get('href')
+                        if link and "/vagas/" in link:
+                            vagas_encontradas.append({
+                                'plataforma': 'Vagas.com.br (Brasil)',
+                                'titulo': titulo,
+                                'link': f"https://www.vagas.com.br{link}",
+                                'cidade': "Brasil",
+                                'termo': termo
+                            })
             except Exception as e:
                 pass
-                
-        # Fallback de segurança para demonstração (Garante que sempre retorna algo)
+
+        # Fallback ultra seguro caso não encontre nada, envia uma vaga simulada
         if len(vagas_encontradas) == 0:
             vagas_encontradas.append({
-                'plataforma': 'Plooral (Simulação)',
+                'plataforma': 'Vagas.com.br (Simulação)',
                 'titulo': f'{termo} - Nova Oportunidade',
-                'link': f'https://www.plooral.com/vagas-simuladas/{urllib.parse.quote(termo)}',
+                'link': f'https://www.vagas.com.br/vagas-de-{termo_formatado}',
                 'cidade': cidade,
                 'termo': termo
             })
