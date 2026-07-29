@@ -1,7 +1,7 @@
 import logging
 import os
 from telegram.ext import ApplicationBuilder, CallbackQueryHandler
-from bot import get_conversation_handler, lidar_botoes
+from bot import get_conversation_handler, get_extra_handlers
 from scheduler import rotina_busca_vagas
 import database
 
@@ -22,7 +22,8 @@ def main():
     
     # Adicionar Handlers
     app.add_handler(get_conversation_handler())
-    app.add_handler(CallbackQueryHandler(lidar_botoes))
+    for handler in get_extra_handlers():
+        app.add_handler(handler)
     
     # 3. Iniciar Scheduler nativo do python-telegram-bot
     # Vai rodar a cada 3600 segundos (1 hora), começando 10 segundos após ligar

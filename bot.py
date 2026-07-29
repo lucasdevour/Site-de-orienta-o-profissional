@@ -1,4 +1,6 @@
 import logging
+import os
+from datetime import datetime
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
     ContextTypes,
@@ -14,52 +16,44 @@ from scraper import buscar_vagas_por_parametros
 logger = logging.getLogger(__name__)
 
 # Estados para a conversa de configuração
-ESTADO, CIDADE, TERMOS, RAIO, HORARIO_INICIO, HORARIO_FIM = range(6)
+ESTADO, CIDADE, TERMOS, REPORTAR_ERRO = range(4)
 
 # Variável temporária para armazenar configurações antes de salvar
 user_data_temp = {}
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+SITE_URL = "https://site-de-orienta-o-profissional-1.onrender.com"
+
+def get_main_menu_keyboard():
+    keyboard = [
+        [InlineKeyboardButton("🔍 Buscar Vagas Agora", callback_data="buscar_agora")],
+        [InlineKeyboardButton("⏸️ Iniciar / Parar Alertas", callback_data="toggle_ativo")],
+        [InlineKeyboardButton("⚙️ Alterar Minha Vaga/Horário/Local", callback_data="reconfigurar")],
+        [InlineKeyboardButton("⚠️ Reportar Erro", callback_data="reportar_erro_btn")],
+        [InlineKeyboardButton("🌐 Acessar Site Oficial", url=SITE_URL)]
+    ]
+    return InlineKeyboardMarkup(keyboard)
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     chat_id = str(update.effective_chat.id)
-    
-    # Verifica se existe um token (Deep Link) Ex: /start TOKEN123
-    if context.args and len(context.args) > 0:
-        token = context.args[0]
-        user_web = database.link_telegram_token(chat_id, token)
-        if user_web:
-            nome = user_web['nome'] or 'Candidato'
-            await update.message.reply_text(
-                f"🎉 Sucesso, {nome}! Sua conta da plataforma web foi vinculada ao Telegram.\n\n"
-                "A partir de agora você receberá alertas de vagas diretamente aqui."
-            )
-            # Continua o fluxo para pedir Estado e Cidade se for a primeira vez
-        else:
-            await update.message.reply_text("❌ Ops! O link que você clicou parece estar inválido ou expirado.")
-            
     user = database.get_user(chat_id)
     
     if user:
         mensagem = (
-            "👋 Olá novamente! Seu robô de vagas já está configurado.\n\n"
-            f"📍 *Cidade:* {user['cidade']} - {user['estado']}\n"
-            f"🎯 *Termos:* {user['termos']}\n"
-            f"🕒 *Horário:* {user['horario_inicio']} às {user['horario_fim']}\n"
-            f"🔄 *Ativo:* {'Sim' if user['ativo'] else 'Não'}"
+            "👋 *Olá novamente!* Seu robô de vagas já está configurado.\n\n"
+            f"📍 *Local:* {user['cidade']} - {user['estado']}\n"
+            f"🎯 *Vagas (Palavras-chave):* {user['termos']}\n"
+            f"🕒 *Horário de Alertas:* {user['horario_inicio']} às {user['horario_fim']}\n"
+            f"🔄 *Alertas Ativos:* {'Sim ✅' if user['ativo'] else 'Não ❌'}\n\n"
+            "Escolha uma opção abaixo:"
         )
-        keyboard = [
-            [InlineKeyboardButton("🔍 Buscar Vagas Agora", callback_data="buscar_agora")],
-            [InlineKeyboardButton("⚙️ Reconfigurar", callback_data="reconfigurar")],
-            [InlineKeyboardButton("⏸️ Pausar/Retomar Alertas", callback_data="toggle_ativo")]
-        ]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        await update.message.reply_text(mensagem, reply_markup=reply_markup, parse_mode='Markdown')
+        await update.message.reply_text(mensagem, reply_markup=get_main_menu_keyboard(), parse_mode='Markdown')
         return ConversationHandler.END
     else:
         mensagem = (
-            "👋 Bem-vindo ao *Monitor de Vagas*!\n\n"
-            "Eu vou buscar vagas no Indeed, LinkedIn e Sólides para você automaticamente.\n"
-            "Para começar, vamos configurar suas preferências.\n\n"
-            "Digite a sigla do seu *Estado* (ex: SC, SP, RJ):"
+            "🤖 *Bem-vindo ao Robô de Vagas Inteligente!*\n\n"
+            "Eu vou trabalhar para você buscando as melhores vagas no LinkedIn, Indeed e Sólides, e te enviarei os links diretamente aqui no Telegram!\n\n"
+            "Para eu começar a trabalhar, preciso saber o que você busca.\n"
+            "➡️ *Qual a sigla do seu Estado?* (ex: SC, SP, RJ):"
         )
         await update.message.reply_text(mensagem, parse_mode='Markdown')
         return ESTADO
@@ -68,39 +62,25 @@ async def configurar_estado(update: Update, context: ContextTypes.DEFAULT_TYPE) 
     chat_id = str(update.effective_chat.id)
     estado = update.message.text.upper().strip()
     if len(estado) != 2:
-        await update.message.reply_text("Por favor, digite apenas a sigla com 2 letras (ex: SC):")
+        await update.message.reply_text("❌ Por favor, digite apenas a sigla com 2 letras (ex: SC):")
         return ESTADO
     
     user_data_temp[chat_id] = {'estado': estado}
-    await update.message.reply_text("Perfeito! Agora digite o nome da sua *Cidade* (ex: Itajaí):", parse_mode='Markdown')
+    await update.message.reply_text("Perfeito! 🏙️ Agora digite o nome da sua *Cidade* (ex: Itajaí):", parse_mode='Markdown')
     return CIDADE
 
 async def configurar_cidade(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     chat_id = str(update.effective_chat.id)
     cidade = update.message.text.strip().title()
     user_data_temp[chat_id]['cidade'] = cidade
+    user_data_temp[chat_id]['raio'] = 1 # Padrão: buscar na cidade e redondezas
     
-    await update.message.reply_text(
-        "Você quer buscar vagas em cidades vizinhas também ou apenas na cidade exata?\n\n"
-        "Digite *0* para APENAS a cidade exata.\n"
-        "Digite *1* para incluir cidades próximas.",
-        parse_mode='Markdown'
+    mensagem = (
+        "💼 *Para qual vaga você deseja se candidatar?*\n\n"
+        "💡 *Dica:* Seja inteligente com as palavras-chave. Se você quer ser eletricista, digite: `Eletricista, Manutenção Elétrica, Instalação`\n\n"
+        "Digite as palavras-chave separadas por vírgula:"
     )
-    return RAIO
-
-async def configurar_raio(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    chat_id = str(update.effective_chat.id)
-    raio_str = update.message.text.strip()
-    if raio_str not in ['0', '1']:
-        await update.message.reply_text("Opção inválida. Digite 0 ou 1:")
-        return RAIO
-        
-    user_data_temp[chat_id]['raio'] = int(raio_str)
-    await update.message.reply_text(
-        "Quais cargos/termos você quer buscar? Separe por vírgula.\n"
-        "(ex: RH, Recursos Humanos, Psicólogo)",
-        parse_mode='Markdown'
-    )
+    await update.message.reply_text(mensagem, parse_mode='Markdown')
     return TERMOS
 
 async def configurar_termos(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -108,58 +88,66 @@ async def configurar_termos(update: Update, context: ContextTypes.DEFAULT_TYPE) 
     termos = update.message.text.strip()
     user_data_temp[chat_id]['termos'] = termos
     
-    await update.message.reply_text(
-        "A que horas eu devo *iniciar* as buscas diárias? (De Seg a Sex)\n"
-        "Digite no formato HH:MM (ex: 09:00 ou 13:00):",
-        parse_mode='Markdown'
+    mensagem = (
+        "🕒 *Qual o melhor horário para eu te enviar as vagas?*\n\n"
+        "Como não posso rodar 24h por dia, escolha o turno que você tem tempo para analisar as oportunidades:"
     )
-    return HORARIO_INICIO
-
-async def configurar_horario_inicio(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    chat_id = str(update.effective_chat.id)
-    horario_inicio = update.message.text.strip()
-    user_data_temp[chat_id]['horario_inicio'] = horario_inicio
-    
-    await update.message.reply_text(
-        "E a que horas devo *parar* as buscas? (ex: 17:00 ou 18:00):",
-        parse_mode='Markdown'
-    )
-    return HORARIO_FIM
-
-async def configurar_horario_fim(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    chat_id = str(update.effective_chat.id)
-    horario_fim = update.message.text.strip()
-    user_data_temp[chat_id]['horario_fim'] = horario_fim
-    user_data_temp[chat_id]['ativo'] = 1
-    
-    database.upsert_user(chat_id, user_data_temp[chat_id])
-    
-    keyboard = [[InlineKeyboardButton("🔍 Buscar Vagas Agora", callback_data="buscar_agora")]]
+    keyboard = [
+        [InlineKeyboardButton("🌅 Manhã (10:00 às 12:00)", callback_data="hora_10_12")],
+        [InlineKeyboardButton("🌇 Tarde (16:00 às 18:00)", callback_data="hora_16_18")],
+        [InlineKeyboardButton("🌃 Noite (20:00 às 22:00)", callback_data="hora_20_22")]
+    ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     
-    await update.message.reply_text(
-        "✅ Tudo configurado! Seu robô já está ativo e buscando vagas de Segunda a Sexta no horário escolhido.",
-        reply_markup=reply_markup
-    )
+    await update.message.reply_text(mensagem, reply_markup=reply_markup, parse_mode='Markdown')
     return ConversationHandler.END
 
-async def cancelar(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    await update.message.reply_text("Configuração cancelada. Digite /start para tentar novamente.")
-    return ConversationHandler.END
+# ---- Callbacks (Botões em Linha) ----
 
 async def lidar_botoes(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
     await query.answer()
     
     chat_id = str(query.message.chat_id)
-    user = database.get_user(chat_id)
     
+    # Processa os botões de horário (Finaliza o onboarding)
+    if query.data.startswith("hora_"):
+        if query.data == "hora_10_12":
+            inicio, fim = "10:00", "12:00"
+        elif query.data == "hora_16_18":
+            inicio, fim = "16:00", "18:00"
+        else:
+            inicio, fim = "20:00", "22:00"
+            
+        if chat_id in user_data_temp:
+            user_data_temp[chat_id]['horario_inicio'] = inicio
+            user_data_temp[chat_id]['horario_fim'] = fim
+            user_data_temp[chat_id]['ativo'] = 1
+            
+            # Salva no banco de dados
+            database.upsert_user(chat_id, user_data_temp[chat_id])
+            
+            await query.edit_message_text(
+                "✅ *Tudo configurado com sucesso!*\n\n"
+                f"A partir de agora eu buscarei vagas de {user_data_temp[chat_id]['termos']} em {user_data_temp[chat_id]['cidade']} "
+                f"e te mandarei um alerta sempre no turno das {inicio} às {fim}.\n\n"
+                "Para acessar o menu, digite /start",
+                parse_mode='Markdown'
+            )
+            # Mostra o menu principal logo após o onboarding
+            await start(update, context)
+        else:
+            await query.edit_message_text("Sessão expirada. Digite /start para tentar novamente.")
+        return
+
+    # A partir daqui, exige usuário cadastrado
+    user = database.get_user(chat_id)
     if not user:
         await query.edit_message_text("Usuário não encontrado. Digite /start")
         return
         
     if query.data == "buscar_agora":
-        await query.message.reply_text("🔍 Iniciando busca sob demanda. Isso pode demorar alguns minutos...")
+        await query.message.reply_text("🔍 Iniciando busca intensiva pelas plataformas. Isso pode demorar até 2 minutinhos...")
         termos = [t.strip() for t in user['termos'].split(',')]
         
         vagas = await buscar_vagas_por_parametros(
@@ -172,19 +160,60 @@ async def lidar_botoes(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         await enviar_vagas_para_usuario(context.bot, chat_id, vagas)
         
     elif query.data == "reconfigurar":
-        await query.message.reply_text("Digite a sigla do seu *Estado* (ex: SC):", parse_mode='Markdown')
-        # Precisaríamos iniciar a ConversationHandler aqui via um commando, ou apenas informar o usuário
-        await query.message.reply_text("Para reconfigurar, envie o comando /configurar")
+        await query.message.reply_text("Vamos reconfigurar seu robô.\n\n➡️ Digite a sigla do seu *Estado* (ex: SC):", parse_mode='Markdown')
+        # Precisamos de um jeito de forçar a entrada na ConversationHandler.
+        # A ConversationHandler no main.py pegará os inputs de texto, mas para isso precisamos sinalizar o estado
+        # O ideal é que o botão invoque a instrução, mas não pode entrar na ConversationHandler magicamente sem o handler ativo.
+        # Por isso, o botão reconfigurar pede para a pessoa digitar /start ou um comando específico se a ConversationHandler não suportar entry_point por callback.
+        
+        # Como o callback_query não está como entry_point, orientamos o usuário:
+        await query.message.reply_text("Para começar a alteração do zero, envie o comando /configurar")
         
     elif query.data == "toggle_ativo":
         novo_status = 0 if user['ativo'] else 1
         database.upsert_user(chat_id, {'ativo': novo_status})
-        texto = "✅ Alertas retomados!" if novo_status else "⏸️ Alertas pausados."
-        await query.edit_message_text(texto)
+        
+        texto_status = "✅ Alertas **Retomados**!" if novo_status else "⏸️ Alertas **Pausados**."
+        await query.message.reply_text(f"{texto_status}\n\nPara ver o menu novamente, digite /start", parse_mode='Markdown')
+        
+    elif query.data == "reportar_erro_btn":
+        await query.message.reply_text(
+            "⚠️ *Reportar um Erro*\n\n"
+            "Por favor, descreva em uma mensagem o que deu errado, qual erro apareceu, ou o que você estava tentando fazer.\n\n"
+            "Envie o comando /erro seguido da sua mensagem.\n"
+            "Exemplo:\n`/erro Quando cliquei em buscar, a tela travou.`", parse_mode='Markdown'
+        )
+
+# ---- Comandos Auxiliares ----
 
 async def comando_configurar(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    await update.message.reply_text("Iniciando reconfiguração. Digite a sigla do seu *Estado* (ex: SC):", parse_mode='Markdown')
+    await update.message.reply_text("⚙️ Iniciando reconfiguração.\n\n➡️ Digite a sigla do seu *Estado* (ex: SC):", parse_mode='Markdown')
     return ESTADO
+
+async def comando_erro(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if context.args:
+        mensagem_erro = " ".join(context.args)
+    else:
+        # Se usou apenas /erro sem nada
+        mensagem_erro = update.message.text.replace('/erro', '').strip()
+        
+    if not mensagem_erro:
+        await update.message.reply_text("Você precisa digitar o erro após o comando. Exemplo:\n`/erro Não recebi nenhuma vaga hoje`", parse_mode='Markdown')
+        return
+        
+    chat_id = str(update.effective_chat.id)
+    user = update.effective_user.first_name
+    data_hora = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    
+    # Salvar em um arquivo de texto
+    with open("erros_telegram.txt", "a", encoding="utf-8") as f:
+        f.write(f"[{data_hora}] User: {user} (ID: {chat_id}) - Erro: {mensagem_erro}\n")
+        
+    await update.message.reply_text("✅ *Seu erro foi enviado com sucesso ao administrador!*\nObrigado por nos ajudar a melhorar o sistema.", parse_mode='Markdown')
+
+async def cancelar(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    await update.message.reply_text("❌ Operação cancelada. Digite /start para voltar ao menu principal.")
+    return ConversationHandler.END
 
 async def enviar_vagas_para_usuario(bot, chat_id, vagas):
     vagas_novas = 0
@@ -206,9 +235,9 @@ async def enviar_vagas_para_usuario(bot, chat_id, vagas):
                 logger.error(f"Erro ao enviar para {chat_id}: {e}")
                 
     if vagas_novas == 0:
-        await bot.send_message(chat_id=chat_id, text="ℹ️ Nenhuma vaga nova foi encontrada desta vez.")
+        await bot.send_message(chat_id=chat_id, text="ℹ️ Nenhuma vaga nova foi encontrada desta vez. Tente mudar suas palavras-chave caso demore muito.")
     else:
-        await bot.send_message(chat_id=chat_id, text=f"✅ {vagas_novas} vagas novas enviadas.")
+        await bot.send_message(chat_id=chat_id, text=f"✅ {vagas_novas} vagas fresquinhas enviadas acima!")
 
 def get_conversation_handler():
     return ConversationHandler(
@@ -219,10 +248,14 @@ def get_conversation_handler():
         states={
             ESTADO: [MessageHandler(filters.TEXT & ~filters.COMMAND, configurar_estado)],
             CIDADE: [MessageHandler(filters.TEXT & ~filters.COMMAND, configurar_cidade)],
-            RAIO: [MessageHandler(filters.TEXT & ~filters.COMMAND, configurar_raio)],
-            TERMOS: [MessageHandler(filters.TEXT & ~filters.COMMAND, configurar_termos)],
-            HORARIO_INICIO: [MessageHandler(filters.TEXT & ~filters.COMMAND, configurar_horario_inicio)],
-            HORARIO_FIM: [MessageHandler(filters.TEXT & ~filters.COMMAND, configurar_horario_fim)],
+            TERMOS: [MessageHandler(filters.TEXT & ~filters.COMMAND, configurar_termos)]
         },
         fallbacks=[CommandHandler("cancelar", cancelar)],
     )
+
+def get_extra_handlers():
+    # Retorna handlers soltos que não fazem parte do ConversationHandler
+    return [
+        CallbackQueryHandler(lidar_botoes),
+        CommandHandler("erro", comando_erro)
+    ]
