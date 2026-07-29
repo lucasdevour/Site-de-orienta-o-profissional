@@ -37,6 +37,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     chat_id = str(update.effective_chat.id)
     user = database.get_user(chat_id)
     
+    # Suporta invocação tanto por comando (update.message) quanto por botão (update.callback_query)
+    msg_origin = update.message if update.message else update.callback_query.message
+    
     if user:
         mensagem = (
             "👋 *Olá novamente!* Seu robô de vagas já está configurado.\n\n"
@@ -46,7 +49,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
             f"🔄 *Alertas Ativos:* {'Sim ✅' if user['ativo'] else 'Não ❌'}\n\n"
             "Escolha uma opção abaixo:"
         )
-        await update.message.reply_text(mensagem, reply_markup=get_main_menu_keyboard(), parse_mode='Markdown')
+        await msg_origin.reply_text(mensagem, reply_markup=get_main_menu_keyboard(), parse_mode='Markdown')
         return ConversationHandler.END
     else:
         mensagem = (
@@ -55,7 +58,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
             "Para eu começar a trabalhar, preciso saber o que você busca.\n"
             "➡️ *Qual a sigla do seu Estado?* (ex: SC, SP, RJ):"
         )
-        await update.message.reply_text(mensagem, parse_mode='Markdown')
+        await msg_origin.reply_text(mensagem, parse_mode='Markdown')
         return ESTADO
 
 async def configurar_estado(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
