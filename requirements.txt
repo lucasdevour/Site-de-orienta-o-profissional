@@ -3,6 +3,6 @@ uvicorn
 pydantic
 python-telegram-bot[job-queue]
 bcrypt
-playwright
+beautifulsoup4
 requests
 gspread
