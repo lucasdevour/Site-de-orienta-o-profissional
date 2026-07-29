@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Loader2, Save } from 'lucide-react';
 
-const API_URL = 'http://localhost:8000/api';
+const API_URL = 'https://site-de-orienta-o-profissional-1.onrender.com/api';
 
 export default function Robo() {
   const [link, setLink] = useState('');

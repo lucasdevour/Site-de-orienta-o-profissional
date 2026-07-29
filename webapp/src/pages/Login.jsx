@@ -15,7 +15,7 @@ export default function Login() {
     
     const endpoint = isLogin ? '/api/login' : '/api/cadastro';
     try {
-      const res = await fetch(`http://localhost:8000${endpoint}`, {
+      const res = await fetch(`https://site-de-orienta-o-profissional-1.onrender.com${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, senha })

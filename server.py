@@ -13,7 +13,7 @@ database.init_db()
 # Configurando CORS para permitir o React acessar a API
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"], # URL do Vite
+    allow_origins=["*"], # Permitir Vercel e Localhost
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

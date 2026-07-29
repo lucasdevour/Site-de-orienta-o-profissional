@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { User, Save } from 'lucide-react';
 
-const API_URL = 'http://localhost:8000/api';
+const API_URL = 'https://site-de-orienta-o-profissional-1.onrender.com/api';
 
 const INICIAL_DATA = {
   nome: '', idade: '', nacionalidade: 'Brasileiro(a)', estado_civil: 'Solteiro(a)',

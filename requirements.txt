@@ -1,7 +1,7 @@
 fastapi
 uvicorn
 pydantic
-python-telegram-bot
+python-telegram-bot[job-queue]
 bcrypt
 playwright
 requests
