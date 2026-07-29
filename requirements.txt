@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+pydantic
+python-telegram-bot
+bcrypt
+playwright
+requests
+gspread
