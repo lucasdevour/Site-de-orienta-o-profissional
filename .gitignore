@@ -1,0 +1,14 @@
+# Python / Backend
+.venv/
+__pycache__/
+*.pyc
+monitor_vagas.db
+credenciais.json
+
+# Node / Frontend
+webapp/node_modules/
+webapp/dist/
+
+# OS
+.DS_Store
+Thumbs.db
