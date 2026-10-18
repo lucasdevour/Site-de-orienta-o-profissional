@@ -52,7 +52,7 @@ export default function LandingPage() {
           maxWidth: '600px',
           lineHeight: '1.6'
         }}>
-          Deixe a Inteligência Artificial moldar o seu currículo e nosso Robô caçar as melhores vagas diretamente no seu Telegram.
+          Deixe a Inteligência Artificial moldar o seu currículo, calcular seu Score ATS, auditar vagas contra golpes e preparar sua entrevista direto na plataforma.
         </p>
 
         {/* Video / Demo Area */}
@@ -114,16 +114,16 @@ export default function LandingPage() {
             <div style={{ background: 'rgba(59,130,246,0.1)', width: '50px', height: '50px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
               <Sparkles size={24} color="var(--primary-color)" />
             </div>
-            <h3 style={{ fontSize: '1.25rem', marginBottom: '1rem' }}>Otimização por IA</h3>
-            <p style={{ color: 'var(--text-secondary)', lineHeight: '1.6' }}>O motor analisa a vaga desejada e molda suas experiências para criar um "match" perfeito com a vaga.</p>
+            <h3 style={{ fontSize: '1.25rem', marginBottom: '1rem' }}>Score ATS & Adaptação IA</h3>
+            <p style={{ color: 'var(--text-secondary)', lineHeight: '1.6' }}>O motor Job Matcher + Injobman analisa cada vaga, calcula sua compatibilidade ATS e gera resumo, carta de apresentação e roteiro de entrevista.</p>
           </div>
 
           <div className="glass-panel" style={{ padding: '2rem' }}>
             <div style={{ background: 'rgba(139,92,246,0.1)', width: '50px', height: '50px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
               <Send size={24} color="var(--accent-color)" />
             </div>
-            <h3 style={{ fontSize: '1.25rem', marginBottom: '1rem' }}>Robô no Telegram</h3>
-            <p style={{ color: 'var(--text-secondary)', lineHeight: '1.6' }}>Conecte seu celular e receba alertas diários de vagas baseadas no seu estado, cidade e cargo desejado.</p>
+            <h3 style={{ fontSize: '1.25rem', marginBottom: '1rem' }}>Caçador de Vagas & RecruitXray</h3>
+            <p style={{ color: 'var(--text-secondary)', lineHeight: '1.6' }}>Busque vagas em tempo real por estado, cidade e cargo já auditadas contra golpes e vagas fantasmas pelo motor RecruitXray.</p>
           </div>
 
           <div className="glass-panel" style={{ padding: '2rem' }}>

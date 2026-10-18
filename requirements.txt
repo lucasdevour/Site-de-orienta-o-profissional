@@ -1,8 +1,8 @@
 fastapi
 uvicorn
 pydantic
-python-telegram-bot[job-queue]
 bcrypt
 beautifulsoup4
 requests
 gspread
+reportlab

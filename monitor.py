@@ -7,26 +7,6 @@ from playwright.async_api import async_playwright
 import requests
 import urllib.parse
 
-# --- FUNÇÃO DO TELEGRAM ---
-def enviar_telegram(mensagem):
-    token = "8916470958:AAH3aI-Hn3YLf-hcGbmoIPhiGol_UHwKMio"
-    chat_id = "5651196393" # ⚠️ Lembre-se de manter o seu ID aqui
-    
-    url = f"https://api.telegram.org/bot{token}/sendMessage"
-    payload = {
-        "chat_id": chat_id,
-        "text": mensagem,
-        "parse_mode": "Markdown"
-    }
-    try:
-        resposta = requests.post(url, data=payload)
-        if resposta.status_code == 200:
-            print("✅ Notificação enviada pelo Telegram!")
-            time.sleep(1) 
-        else:
-            print(f"❌ Erro no Telegram: {resposta.text}")
-    except Exception as e:
-        print(f"❌ Erro de conexão com Telegram: {e}")
 
 # --- NORMALIZAR TEXTO ---
 def normalizar_texto(texto: str) -> str:
@@ -128,7 +108,6 @@ async def buscar_vagas():
                         print(f"✅ [Sólides] NOVA Vaga Encontrada: {texto}")
                         planilha.append_row([data_hoje, "Sólides", texto, cidade_alvo, detail_url, "Pendente"])
                         links_salvos.add(detail_url) # Adiciona na memória temporária para essa rodada
-                        enviar_telegram(f"🚨 *Nova Vaga!*\n\n*Cargo:* {texto}\n*Plataforma:* Sólides\n🔗 [Acessar Vaga]({detail_url})")
                         
                 if vagas_reais_solides == 0:
                     print(f"❌ Nenhuma vaga nova para '{termo}' na Sólides.")
@@ -180,7 +159,6 @@ async def buscar_vagas():
                         print(f"✅ [LinkedIn] NOVA Vaga Encontrada: {titulo}")
                         planilha.append_row([data_hoje, "LinkedIn", titulo, cidade_alvo, link, "Pendente"])
                         links_salvos.add(link)
-                        enviar_telegram(f"🚨 *Nova Vaga!*\n\n*Cargo:* {titulo}\n*Plataforma:* LinkedIn\n🔗 [Acessar Vaga]({link})")
                 except Exception:
                     pass
             
@@ -224,7 +202,6 @@ async def buscar_vagas():
                         print(f"✅ [Indeed] NOVA Vaga Encontrada: {titulo}")
                         planilha.append_row([data_hoje, "Indeed", titulo, cidade_alvo, link, "Pendente"])
                         links_salvos.add(link)
-                        enviar_telegram(f"🚨 *Nova Vaga!*\n\n*Cargo:* {titulo}\n*Plataforma:* Indeed\n🔗 [Acessar Vaga]({link})")
                 except Exception:
                     pass
             

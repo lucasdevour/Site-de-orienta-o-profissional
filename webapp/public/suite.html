@@ -1,0 +1,3235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Career Agent Suite — AI Job Search, Placement & Recruiter Forensics Engine</title>
+  <meta name="description" content="Unified agentic suite of 6 career skills: HireMe, Injobman, Job Matcher, JD to ML Project, Live Job Hunter, and STEM OPT NYC Hunter.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070b14;
+      --bg-panel: #0d1527;
+      --bg-card: #121c33;
+      --bg-card-hover: #182544;
+      --bg-subtle: #1c2b4e;
+      --border-subtle: #1e2e4f;
+      --border-glow: #2d4373;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --primary-glow: rgba(59, 130, 246, 0.25);
+      --accent-cyan: #06b6d4;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --accent-purple: #8b5cf6;
+      --accent-indigo: #6366f1;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+      --shadow-sm: 0 4px 12px rgba(0,0,0,0.3);
+      --shadow-md: 0 8px 24px rgba(0,0,0,0.4);
+      --shadow-lg: 0 16px 40px rgba(0,0,0,0.5);
+      --transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(59, 130, 246, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 85% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 50% 85%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+      background-attachment: fixed;
+    }
+
+    /* HEADER */
+    header {
+      background: rgba(13, 21, 39, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-subtle);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 0.85rem 2rem;
+    }
+    .header-inner {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      text-decoration: none;
+      color: inherit;
+    }
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, var(--primary), var(--accent-purple));
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+      box-shadow: 0 0 20px var(--primary-glow);
+    }
+    .brand-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .brand-subtitle {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.825rem;
+      font-weight: 600;
+      padding: 0.55rem 1.1rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: var(--transition);
+      text-decoration: none;
+      font-family: inherit;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      color: #fff;
+      box-shadow: 0 4px 14px var(--primary-glow);
+    }
+    .btn-primary:hover {
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+      transform: translateY(-1px);
+    }
+    .btn-secondary {
+      background: var(--bg-card);
+      color: var(--text-main);
+      border-color: var(--border-subtle);
+    }
+    .btn-secondary:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-glow);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+    .btn-accent {
+      background: linear-gradient(135deg, #059669, var(--accent-emerald));
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
+    }
+    .btn-accent:hover {
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+      transform: translateY(-1px);
+    }
+    .btn-sm {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.775rem;
+    }
+
+    /* BADGES */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 9999px;
+      font-size: 0.725rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    .badge-blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+    .badge-green { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-purple { background: rgba(139, 92, 246, 0.15); color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.3); }
+    .badge-amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .badge-rose { background: rgba(244, 63, 94, 0.15); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.3); }
+    .badge-cyan { background: rgba(6, 182, 212, 0.15); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.3); }
+
+    /* NAVIGATION TABS */
+    .nav-container {
+      background: rgba(10, 16, 31, 0.95);
+      border-bottom: 1px solid var(--border-subtle);
+      position: sticky;
+      top: 67px;
+      z-index: 90;
+      backdrop-filter: blur(12px);
+    }
+    .nav-tabs {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: flex;
+      gap: 0.5rem;
+      padding: 0.6rem 2rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .nav-tabs::-webkit-scrollbar { display: none; }
+    .tab-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.65rem 1.15rem;
+      border-radius: var(--radius-md);
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: var(--transition);
+    }
+    .tab-btn:hover {
+      color: var(--text-main);
+      background: var(--bg-card);
+      border-color: var(--border-subtle);
+    }
+    .tab-btn.active {
+      color: #fff;
+      background: var(--bg-card);
+      border-color: var(--border-glow);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+    .tab-btn.active .tab-icon {
+      transform: scale(1.1);
+    }
+
+    /* MAIN CONTENT */
+    main {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 2rem;
+      flex: 1;
+      width: 100%;
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.25s ease-out;
+    }
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* SECTION HERO */
+    .hero-banner {
+      background: linear-gradient(135deg, rgba(13, 21, 39, 0.8), rgba(28, 43, 78, 0.5));
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      padding: 2.25rem;
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+    }
+    .hero-banner::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -10%;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+    }
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--accent-cyan);
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.75rem;
+    }
+    .hero-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.25rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #fff;
+      margin-bottom: 0.85rem;
+      line-height: 1.2;
+    }
+    .hero-desc {
+      color: var(--text-muted);
+      font-size: 1rem;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1.25rem;
+      margin-top: 1.5rem;
+    }
+    .stat-card {
+      background: rgba(10, 16, 31, 0.6);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    .stat-value {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    /* GRID & CARDS */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+    @media (max-width: 1024px) {
+      .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); }
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      main { padding: 1rem; }
+      header { padding: 0.75rem 1rem; }
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+    }
+    .card:hover {
+      border-color: var(--border-glow);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+      gap: 1rem;
+    }
+    .card-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      color: #fff;
+    }
+    .card-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }
+
+    /* SUB-TABS WITHIN SKILLS */
+    .subtabs-bar {
+      display: flex;
+      gap: 0.5rem;
+      background: rgba(10, 16, 31, 0.7);
+      padding: 0.4rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+      margin-bottom: 1.5rem;
+      overflow-x: auto;
+    }
+    .subtab-btn {
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.825rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      white-space: nowrap;
+      transition: var(--transition);
+    }
+    .subtab-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .subtab-btn.active {
+      color: #fff;
+      background: var(--primary);
+      box-shadow: 0 2px 10px var(--primary-glow);
+    }
+
+    .subpanel {
+      display: none;
+      animation: fadeIn 0.2s ease-out;
+    }
+    .subpanel.active {
+      display: block;
+    }
+
+    /* FORMS & INPUTS */
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+    .form-label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.5rem;
+    }
+    .form-control {
+      width: 100%;
+      background: rgba(10, 16, 31, 0.7);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.9rem;
+      padding: 0.75rem 1rem;
+      transition: var(--transition);
+      outline: none;
+    }
+    .form-control:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-glow);
+      background: rgba(13, 21, 39, 0.9);
+    }
+    textarea.form-control {
+      resize: vertical;
+      min-height: 110px;
+      line-height: 1.5;
+    }
+    select.form-control {
+      cursor: pointer;
+    }
+
+    /* CODE & SCRIPTS TERMINAL */
+    .terminal-box {
+      background: #060a12;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      margin-bottom: 1.25rem;
+    }
+    .terminal-header {
+      background: #0a0f1d;
+      padding: 0.6rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .terminal-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.775rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .terminal-dots {
+      display: flex;
+      gap: 5px;
+    }
+    .terminal-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+    }
+    .terminal-dot.red { background: #ef4444; }
+    .terminal-dot.yellow { background: #f59e0b; }
+    .terminal-dot.green { background: #10b981; }
+    .terminal-body {
+      padding: 1.25rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      color: #cbd5e1;
+      overflow-x: auto;
+      max-height: 480px;
+      white-space: pre-wrap;
+    }
+
+    /* TABLES */
+    .table-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .table-toolbar {
+      padding: 1rem 1.5rem;
+      background: rgba(10, 16, 31, 0.5);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .table-search {
+      display: flex;
+      align-items: center;
+      background: rgba(10, 16, 31, 0.8);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 0.4rem 0.8rem;
+      gap: 0.5rem;
+      min-width: 260px;
+    }
+    .table-search input {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 0.85rem;
+      outline: none;
+      width: 100%;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.875rem;
+    }
+    thead {
+      background: rgba(10, 16, 31, 0.8);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    th {
+      padding: 0.85rem 1.25rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.725rem;
+      letter-spacing: 0.05em;
+    }
+    td {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid rgba(30, 46, 79, 0.5);
+      color: var(--text-main);
+      vertical-align: middle;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1e293b;
+      border: 1px solid var(--border-glow);
+      color: #fff;
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--radius-md);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      z-index: 1000;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+    }
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* METRIC CHIPS */
+    .chips-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .chip {
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .chip-green { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .chip-red { background: rgba(244, 63, 94, 0.15); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.3); }
+    .chip-amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+
+    /* ACCORDION */
+    .accordion-item {
+      background: rgba(10, 16, 31, 0.6);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      margin-bottom: 0.75rem;
+      overflow: hidden;
+    }
+    .accordion-header {
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: var(--transition);
+    }
+    .accordion-header:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+    .accordion-body {
+      padding: 0 1.25rem 1.25rem;
+      display: none;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-subtle);
+      padding-top: 1rem;
+    }
+    .accordion-item.open .accordion-body { display: block; }
+    .accordion-item.open .accordion-header { color: var(--primary); }
+
+    /* CHECKLIST */
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.85rem;
+      padding: 0.85rem 1rem;
+      background: rgba(10, 16, 31, 0.4);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .checklist-item:hover {
+      border-color: var(--border-glow);
+      background: rgba(10, 16, 31, 0.8);
+    }
+    .checklist-item.checked {
+      opacity: 0.6;
+      border-color: rgba(16, 185, 129, 0.3);
+      background: rgba(16, 185, 129, 0.05);
+    }
+    .checklist-item.checked .checklist-title {
+      text-decoration: line-through;
+    }
+    .checklist-checkbox {
+      margin-top: 0.25rem;
+      accent-color: var(--accent-emerald);
+      width: 17px;
+      height: 17px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-inner">
+      <a href="#" class="brand">
+        <div class="brand-icon">⚡</div>
+        <div>
+          <div class="brand-title">Career Agent Hub <span class="badge badge-blue">v2.6 Suite</span></div>
+          <div class="brand-subtitle">Autonomous Career Ops, Placement & Recruiter Forensics Engine</div>
+        </div>
+      </a>
+      <div class="header-actions">
+        <button class="btn btn-secondary btn-sm" onclick="loadBhupeshDemoData()">
+          <span>✨ Load Demo Profile & JD</span>
+        </button>
+        <button class="btn btn-primary btn-sm" onclick="copyFullSuiteSystemPrompt()">
+          <span>📋 Copy Suite Prompt</span>
+        </button>
+        <button class="btn btn-secondary btn-sm" onclick="window.print()">
+          <span>📄 Print / PDF</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- NAVIGATION TABS -->
+  <nav class="nav-container">
+    <div class="nav-tabs" id="mainTabList">
+      <button class="tab-btn active" onclick="switchTab('overview')">
+        <span class="tab-icon">🏛️</span> <span>Suite Overview</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('hireme')">
+        <span class="tab-icon">🎯</span> <span>HireMe</span> <span class="badge badge-purple">Coach</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('injobman')">
+        <span class="tab-icon">💼</span> <span>Injobman</span> <span class="badge badge-green">Application</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('jobmatcher')">
+        <span class="tab-icon">🔍</span> <span>Job Matcher</span> <span class="badge badge-cyan">ATS Scorer</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('jd2ml')">
+        <span class="tab-icon">🤖</span> <span>JD → ML Project</span> <span class="badge badge-amber">10-Step</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('livehunter')">
+        <span class="tab-icon">🌐</span> <span>Live Job Hunter</span> <span class="badge badge-blue">Pipeline</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('stemopt')">
+        <span class="tab-icon">🗽</span> <span>STEM OPT NYC</span> <span class="badge badge-rose">Immigration</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('recruitxray')">
+        <span class="tab-icon">🕵️</span> <span>RecruitXray</span> <span class="badge badge-rose">Forensics</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- MAIN VIEWPORT -->
+  <main>
+
+    <!-- ==================== MONITOR_VAGAS API INTEGRATION BAR ==================== -->
+    <div class="card" style="margin-bottom: 1.75rem; border-color: var(--primary); background: linear-gradient(135deg, rgba(18, 28, 51, 0.95), rgba(13, 21, 39, 0.95));">
+      <div class="card-header" style="margin-bottom: 1rem;">
+        <div>
+          <h3 class="card-title">🔌 Integração Ao Vivo — Monitor de Vagas API (SQLite + Scraper + Skills)</h3>
+          <p class="card-subtitle">Conectado ao backend <code>server.py</code>: sincronize seu currículo salvo no banco, busque vagas reais e gere seu Kit ATS + Entrevista + Auditoria RecruitXray.</p>
+        </div>
+        <span id="apiStatusBadge" class="badge badge-amber">⚡ API: Verificando...</span>
+      </div>
+      <div class="grid-4" style="margin-bottom: 1rem;">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label">Seu E-mail (Cadastrado no Banco)</label>
+          <input type="email" id="mvEmail" class="form-control" placeholder="seuemail@exemplo.com" value="lucas@exemplo.com">
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label">Estado (UF)</label>
+          <input type="text" id="mvEstado" class="form-control" placeholder="SC" value="SC" maxlength="2">
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label">Cidade</label>
+          <input type="text" id="mvCidade" class="form-control" placeholder="Itajaí" value="Itajaí">
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label">Cargos / Palavras-Chave</label>
+          <input type="text" id="mvTermos" class="form-control" placeholder="Ex: RH, Eletricista, Analista" value="RH, Recursos Humanos, Administrativo">
+        </div>
+      </div>
+      <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center;">
+        <button class="btn btn-secondary btn-sm" onclick="sincronizarPerfilMonitorVagas()">
+          <span>📥 Carregar Meu Currículo do Banco</span>
+        </button>
+        <button class="btn btn-secondary btn-sm" onclick="salvarPreferenciasMonitorVagas()">
+          <span>💾 Salvar Preferências</span>
+        </button>
+        <button class="btn btn-accent btn-sm" onclick="buscarVagasReaisMonitorVagas()">
+          <span>🔍 Buscar Vagas Reais + ATS Score + RecruitXray</span>
+        </button>
+        <span id="mvSyncFeedback" style="font-size: 0.8rem; color: var(--text-muted); margin-left: auto;"></span>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 1: OVERVIEW ==================== -->
+    <div id="tab-overview" class="tab-content active">
+      <div class="hero-banner">
+        <div class="hero-content">
+          <div class="hero-tag">Unified Agentic Career Architecture</div>
+          <h1 class="hero-title">6 Specialized Skills. 1 Unified Career Engine.</h1>
+          <p class="hero-desc">
+            An end-to-end operational suite engineered for senior finance, analytics, and tech professionals. 
+            From initial multi-platform market discovery, forensic recruiter due diligence (RecruitXray), and NYC E-Verify employer validation to ATS match scoring, 
+            executive application packs, production ML portfolio artifacts, and high-stakes salary negotiation.
+          </p>
+          <div class="hero-stats">
+            <div class="stat-card">
+              <span class="stat-value">7 Skills</span>
+              <span class="stat-label">Agentic Capabilities</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-value">25+ Cos</span>
+              <span class="stat-label">NYC E-Verify Database</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-value">80+ Qs</span>
+              <span class="stat-label">Categorized Question Bank</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-value">100% Client</span>
+              <span class="stat-label">Zero-Latency Execution</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WORKFLOW PIPELINE -->
+      <div class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">🔄 End-to-End Execution Pipeline</h2>
+            <p class="card-subtitle">How the 6 skills orchestrate seamlessly from initial market search to signing the offer</p>
+          </div>
+          <span class="badge badge-blue">Linear Flow</span>
+        </div>
+        <div class="grid-3" style="margin-bottom: 0;">
+          <div class="card" style="background: rgba(10,16,31,0.5); border-left: 3px solid var(--accent-cyan);">
+            <div style="font-size: 0.75rem; color: var(--accent-cyan); font-weight: 700; text-transform: uppercase;">Stage 1: Discovery & Filtering</div>
+            <h3 style="font-size: 1.05rem; margin: 0.35rem 0; color:#fff;">Live Job Hunter + STEM OPT NYC</h3>
+            <p style="font-size: 0.825rem; color: var(--text-muted);">
+              Generates targeted Boolean queries across LinkedIn/Indeed and cross-references 25+ confirmed NYC E-Verify employers to guarantee visa compliance.
+            </p>
+            <div style="margin-top: 0.75rem;">
+              <button class="btn btn-secondary btn-sm" onclick="switchTab('livehunter')">Open Live Hunter →</button>
+            </div>
+          </div>
+          <div class="card" style="background: rgba(10,16,31,0.5); border-left: 3px solid var(--primary);">
+            <div style="font-size: 0.75rem; color: var(--primary); font-weight: 700; text-transform: uppercase;">Stage 2: Match & Artifacts</div>
+            <h3 style="font-size: 1.05rem; margin: 0.35rem 0; color:#fff;">Job Matcher + Injobman</h3>
+            <p style="font-size: 0.825rem; color: var(--text-muted);">
+              Audits resume against JD for keyword gaps and ATS penalties, then generates a tailored 1-page resume, cover letter, and 80/20 interview prep card.
+            </p>
+            <div style="margin-top: 0.75rem;">
+              <button class="btn btn-secondary btn-sm" onclick="switchTab('jobmatcher')">Open Matcher →</button>
+            </div>
+          </div>
+          <div class="card" style="background: rgba(10,16,31,0.5); border-left: 3px solid var(--accent-purple);">
+            <div style="font-size: 0.75rem; color: var(--accent-purple); font-weight: 700; text-transform: uppercase;">Stage 3: Differentiation & Offer</div>
+            <h3 style="font-size: 1.05rem; margin: 0.35rem 0; color:#fff;">JD → ML Project + HireMe</h3>
+            <p style="font-size: 0.825rem; color: var(--text-muted);">
+              Architects a 10-slide interview project deck & production repo, executes mock interviews, and runs word-for-word salary negotiation counter-offers.
+            </p>
+            <div style="margin-top: 0.75rem;">
+              <button class="btn btn-secondary btn-sm" onclick="switchTab('hireme')">Open HireMe →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SKILL CATALOG CARDS -->
+      <h2 style="font-family: 'Outfit', sans-serif; font-size: 1.4rem; margin-bottom: 1rem; color: #fff;">Catalog of Skills & Functions</h2>
+      <div class="grid-3">
+        
+        <!-- CARD 1: HIREME -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <span class="badge badge-purple">Interview & Negotiation</span>
+              <h3 class="card-title" style="margin-top: 0.4rem;">🎯 HireMe</h3>
+            </div>
+            <div style="font-size: 1.5rem;">👑</div>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; flex: 1;">
+            Elite hiring coach transforming candidates into top 1% offer magnets. Includes 6-step deep coaching, STAR narrative bank, 80+ question simulations, and salary negotiation scripts.
+          </p>
+          <div style="font-size: 0.775rem; color: var(--accent-cyan); margin-bottom: 1rem; font-family: 'JetBrains Mono', monospace;">
+            Triggers: "mock interview", "salary negotiation", "STAR method"
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="switchTab('hireme')">Launch HireMe Studio →</button>
+        </div>
+
+        <!-- CARD 2: INJOBMAN -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <span class="badge badge-green">Application Engine</span>
+              <h3 class="card-title" style="margin-top: 0.4rem;">💼 Injobman</h3>
+            </div>
+            <div style="font-size: 1.5rem;">📄</div>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; flex: 1;">
+            Generates executive-quality application handbooks: JD requirement deconstruction, ATS-optimized tailored resume (.docx), cover letter (.docx), and 80/20 interview priority guide.
+          </p>
+          <div style="font-size: 0.775rem; color: var(--accent-cyan); margin-bottom: 1rem; font-family: 'JetBrains Mono', monospace;">
+            Triggers: "tailor resume", "build injobman package", "prep me"
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="switchTab('injobman')">Launch Injobman Studio →</button>
+        </div>
+
+        <!-- CARD 3: JOB MATCHER -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <span class="badge badge-cyan">Scoring & Forensics</span>
+              <h3 class="card-title" style="margin-top: 0.4rem;">🔍 Job Matcher</h3>
+            </div>
+            <div style="font-size: 1.5rem;">📊</div>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; flex: 1;">
+            Comprehensive resume vs JD match analysis. Computes ATS scores, identifies missing critical keywords, audits red flags/disqualifiers, and produces branded PDF reports.
+          </p>
+          <div style="font-size: 0.775rem; color: var(--accent-cyan); margin-bottom: 1rem; font-family: 'JetBrains Mono', monospace;">
+            Triggers: "how do I match this job", "ATS score", "keyword gap"
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="switchTab('jobmatcher')">Launch Match Engine →</button>
+        </div>
+
+        <!-- CARD 4: JD TO ML PROJECT -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <span class="badge badge-amber">Portfolio & Architecture</span>
+              <h3 class="card-title" style="margin-top: 0.4rem;">🤖 JD → ML Project</h3>
+            </div>
+            <div style="font-size: 1.5rem;">🧠</div>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; flex: 1;">
+            Transforms any target Job Description into an execution-ready Machine Learning system with synthetic data recipe, baseline/SOTA modeling, 10-slide interview deck, and repo scaffolding.
+          </p>
+          <div style="font-size: 0.775rem; color: var(--accent-cyan); margin-bottom: 1rem; font-family: 'JetBrains Mono', monospace;">
+            Triggers: "turn JD into project", "ML portfolio project"
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="switchTab('jd2ml')">Launch ML Architect →</button>
+        </div>
+
+        <!-- CARD 5: LIVE JOB HUNTER -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <span class="badge badge-blue">Market Intelligence</span>
+              <h3 class="card-title" style="margin-top: 0.4rem;">🌐 Live Job Hunter</h3>
+            </div>
+            <div style="font-size: 1.5rem;">🎯</div>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; flex: 1;">
+            Real-time job search engine across LinkedIn, Indeed, Wellfound, and direct ATS URLs. Delivers 20+ verified listings with hiring manager forensics, salary bands, and weekly cadence tips.
+          </p>
+          <div style="font-size: 0.775rem; color: var(--accent-cyan); margin-bottom: 1rem; font-family: 'JetBrains Mono', monospace;">
+            Triggers: "find jobs", "what jobs should I apply to", "live search"
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="switchTab('livehunter')">Launch Job Hunter →</button>
+        </div>
+
+        <!-- CARD 6: STEM OPT NYC HUNTER -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <span class="badge badge-rose">Immigration & Placement</span>
+              <h3 class="card-title" style="margin-top: 0.4rem;">🗽 STEM OPT NYC Hunter</h3>
+            </div>
+            <div style="font-size: 1.5rem;">🇺🇸</div>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; flex: 1;">
+            Specialist U.S. immigration + career strategist for F-1 STEM OPT candidates in NYC. Features 25+ verified E-Verify employers, Form I-983 compliance audit, and 30-day conversion plan.
+          </p>
+          <div style="font-size: 0.775rem; color: var(--accent-cyan); margin-bottom: 1rem; font-family: 'JetBrains Mono', monospace;">
+            Triggers: "STEM OPT NYC", "E-Verify employers NYC", "OPT strategy"
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="switchTab('stemopt')">Launch OPT Hunter →</button>
+        </div>
+
+        <!-- CARD 7: RECRUITXRAY -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <span class="badge badge-rose">Forensics & Due Diligence</span>
+              <h3 class="card-title" style="margin-top: 0.4rem;">🕵️ RecruitXray</h3>
+            </div>
+            <div style="font-size: 1.5rem;">🔍</div>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; flex: 1;">
+            Forensic due diligence investigator combining Big 4 audit rigor, digital footprint analysis, scam signal detection, and contradiction analysis to vet recruiters before you share data or accept offers.
+          </p>
+          <div style="font-size: 0.775rem; color: var(--accent-cyan); margin-bottom: 1rem; font-family: 'JetBrains Mono', monospace;">
+            Triggers: "vet this recruiter", "is this recruiter legit", "scam check"
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="switchTab('recruitxray')">Launch RecruitXray →</button>
+        </div>
+
+
+      </div>
+    </div>
+
+    <!-- ==================== TAB 2: HIREME ==================== -->
+    <div id="tab-hireme" class="tab-content">
+      <div class="hero-banner" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(13, 21, 39, 0.9));">
+        <div class="hero-content">
+          <div class="hero-tag" style="color: var(--accent-purple);">Skill Module • skills/hireme</div>
+          <h1 class="hero-title">HireMe — Elite Hiring Coach & Offer Magnet</h1>
+          <p class="hero-desc">
+            Transforms candidates into top 1% offer magnets using a proven 6-step coaching protocol, behavioral simulation, 
+            word-for-word salary negotiation sequences, and branded hyperlinked PDF delivery.
+          </p>
+          <div class="chips-group">
+            <span class="badge badge-purple">Step 1: Deep Analysis</span>
+            <span class="badge badge-purple">Step 2: Positioning (60s Pitch + 3 STARs)</span>
+            <span class="badge badge-purple">Step 3: Interview Simulation</span>
+            <span class="badge badge-purple">Step 4: Interpersonal Mastery</span>
+            <span class="badge badge-purple">Step 5: Closing Strategy</span>
+            <span class="badge badge-purple">Step 6: Salary Maximization</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- HIREME SUB-TABS -->
+      <div class="subtabs-bar">
+        <button class="subtab-btn active" onclick="switchSubtab('hireme', 'mock')">🎙️ Interactive Mock Interview</button>
+        <button class="subtab-btn" onclick="switchSubtab('hireme', 'negotiate')">💰 Salary Negotiation Scripts</button>
+        <button class="subtab-btn" onclick="switchSubtab('hireme', 'star')">⭐ STAR Story Builder</button>
+        <button class="subtab-btn" onclick="switchSubtab('hireme', 'system')">📘 6-Step Coaching Blueprint</button>
+        <button class="subtab-btn" onclick="switchSubtab('hireme', 'qbank')">🗂️ 80+ Question Bank</button>
+      </div>
+
+      <!-- SUBTAB: MOCK INTERVIEW -->
+      <div id="subtab-hireme-mock" class="subpanel active">
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Simulated Question Prompter</h3>
+              <span class="badge badge-blue">Live Evaluator</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Question Domain</label>
+              <select id="mockCategory" class="form-control" onchange="generateMockQuestion()">
+                <option value="behavioral">Universal Behavioral (Leadership, Conflict, Failure)</option>
+                <option value="finance_risk">Finance — Credit & Risk Management</option>
+                <option value="fpa">Finance — FP&A, Forecasting & Variance Analysis</option>
+                <option value="quant_ml">Analytics, Machine Learning & Quantitative Modeling</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.5rem;">
+                <label class="form-label" style="margin-bottom:0;">Active Interview Question</label>
+                <button class="btn btn-secondary btn-sm" onclick="generateMockQuestion()">🎲 New Question</button>
+              </div>
+              <div id="mockQuestionText" style="background: rgba(10,16,31,0.8); border: 1px solid var(--border-glow); padding: 1rem; border-radius: var(--radius-sm); font-size: 0.95rem; font-weight: 600; color: #fff;">
+                "Tell me about a time when a financial forecast or analytical model you built differed substantially from actual results. How did you diagnose the variance, and how did you present it to stakeholders?"
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Your Candidate Response</label>
+              <textarea id="mockAnswerInput" class="form-control" style="min-height: 180px;" placeholder="Structure your response: Situation, Task, Action, and Quantified Result..."></textarea>
+            </div>
+            <div style="display: flex; gap: 0.75rem;">
+              <button class="btn btn-primary" onclick="evaluateCandidateAnswer()">⚡ Evaluate Response</button>
+              <button class="btn btn-secondary" onclick="loadSampleSTARAnswer()">Load Exemplary Answer</button>
+            </div>
+          </div>
+
+          <!-- EVALUATION SCORECARD -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">AI Coach Evaluation & Rubric</h3>
+              <span id="mockScoreBadge" class="badge badge-amber">Awaiting Input</span>
+            </div>
+            <div id="mockEvaluationResult">
+              <div style="text-align: center; padding: 3rem 1rem; color: var(--text-dim);">
+                <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">🎯</div>
+                <div style="font-size: 0.95rem; font-weight: 600; color: var(--text-muted);">No answer evaluated yet</div>
+                <div style="font-size: 0.8rem; margin-top: 0.25rem;">Type your answer or click "Load Exemplary Answer" then click "Evaluate Response".</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUBTAB: SALARY NEGOTIATION -->
+      <div id="subtab-hireme-negotiate" class="subpanel">
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Word-for-Word Negotiation Playbook</h3>
+              <span class="badge badge-green">Proven Scripts</span>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+              These are field-tested scripts from <code>skills/hireme/references/negotiation-scripts.md</code>. Never negotiate against yourself; make them anchor first, pause 24 hours, and counter with total-compensation leverage.
+            </p>
+            <div class="form-group">
+              <label class="form-label">Select Negotiation Scenario</label>
+              <select id="negotiationScriptSelect" class="form-control" onchange="updateNegotiationScript()">
+                <option value="deflect_range">Part 1: Deflecting Before Offer — Defer to the Range</option>
+                <option value="deflect_upside">Part 1: Deflecting Before Offer — Range with Upside Signal</option>
+                <option value="pause_24hr">Part 2: Receiving the Initial Offer — The 24-Hour Strategic Pause</option>
+                <option value="counter_market">Part 3: The Counter-Offer — Market Rate & Responsibility Gap</option>
+                <option value="counter_competing">Part 3: The Counter-Offer — Competing Offer Leverage</option>
+                <option value="counter_total">Part 3: Expanding the Total Package (Sign-on, Equity, Review Cycle)</option>
+                <option value="final_pushback">Part 4: Handling "Is this your final number?" Pushback</option>
+              </select>
+            </div>
+            <div class="terminal-box">
+              <div class="terminal-header">
+                <div class="terminal-title"><span>💬</span> <span id="negotiationScriptTitle">Script Preview</span></div>
+                <button class="btn btn-secondary btn-sm" onclick="copyNegotiationScript()">Copy Script</button>
+              </div>
+              <div id="negotiationScriptText" class="terminal-body">
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Recruiter Psychology & Golden Rules</h3>
+              <span class="badge badge-purple">Recruiter-Side</span>
+            </div>
+            <div class="accordion-item open">
+              <div class="accordion-header">Rule #1: Never State a Number First</div>
+              <div class="accordion-body">
+                Whoever speaks the first number anchors the conversation. If you anchor at $130K when their band max was $155K, you've permanently lost $25K before even starting. Always deflect back to their approved band.
+              </div>
+            </div>
+            <div class="accordion-item">
+              <div class="accordion-header">Rule #2: The 24-Hour Silence Rule</div>
+              <div class="accordion-body">
+                When an offer is extended verbally, say: <em>"Thank you so much! I am thrilled about this role and the team. Could you send the written compensation details over email so I can review the complete package and discuss it tomorrow?"</em> Never negotiate while excited on the phone.
+              </div>
+            </div>
+            <div class="accordion-item">
+              <div class="accordion-header">Rule #3: Total Package Arbitrage</div>
+              <div class="accordion-body">
+                If base salary is hard-capped by HR bands, pivot immediately to non-base levers: sign-on bonus ($10k-$25k), guaranteed 6-month performance review cycle, extra PTO, remote stipend, or accelerated equity vesting.
+              </div>
+            </div>
+            <div class="accordion-item">
+              <div class="accordion-header">Rule #4: Competing Offer Framing</div>
+              <div class="accordion-body">
+                Never threaten. Frame competing offers as reluctance: <em>"You are my clear #1 choice. However, I have another offer on the table at $148K with a $15K sign-on. If we can close the gap to $145K base, I am prepared to sign today and withdraw from other processes."</em>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUBTAB: STAR BUILDER -->
+      <div id="subtab-hireme-star" class="subpanel">
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Executive STAR Narrative Builder</h3>
+              <span class="badge badge-green">Framework</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Story Headline / Tag</label>
+              <input type="text" id="starHeadline" class="form-control" value="Automated Multi-Entity Consolidation Model (Oracle ERP & Power BI)">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Situation (15-20s)</label>
+              <textarea id="starSit" class="form-control" style="min-height: 70px;">During a $45M international division restructuring, monthly reporting across 4 entities required 6 days of manual spreadsheet reconciliation, creating board reporting delays.</textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Task (10-15s)</label>
+              <textarea id="starTask" class="form-control" style="min-height: 60px;">I was tasked by the VP of Finance to overhaul the data pipeline and cut reporting turnaround by at least 50% without adding headcount.</textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Action (45-60s — What YOU did)</label>
+              <textarea id="starAction" class="form-control" style="min-height: 90px;">I engineered an automated data pipeline linking Oracle ERP General Ledger tables directly into Power BI via custom SQL queries and Python ETL scripts. I established unified chart-of-accounts mapping, automated FX currency conversion, and built dynamic variance waterfall charts.</textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Result (15-20s — Quantified Metrics)</label>
+              <textarea id="starResult" class="form-control" style="min-height: 70px;">Compressed month-end close cycle from 6 days to 8 hours (86% reduction), eliminated recurring reconciliation discrepancies, and established the reporting standard adopted across 3 global divisions.</textarea>
+            </div>
+            <button class="btn btn-primary" onclick="renderStarMarkdown()">⚡ Generate Formatted STAR Card</button>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Generated STAR Narrative Card</h3>
+              <button class="btn btn-secondary btn-sm" onclick="copyStarCard()">Copy Markdown</button>
+            </div>
+            <div class="terminal-box">
+              <div class="terminal-header">
+                <div class="terminal-title">star_narrative.md</div>
+              </div>
+              <div id="starRenderedOutput" class="terminal-body">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUBTAB: SYSTEM BLUEPRINT -->
+      <div id="subtab-hireme-system" class="subpanel">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">The 6-Step Coaching System Architecture</h3>
+            <span class="badge badge-purple">Core Workflow</span>
+          </div>
+          <div class="grid-3">
+            <div class="card" style="background: rgba(10,16,31,0.5);">
+              <div style="font-size:0.75rem; color:var(--accent-purple); font-weight:700;">STEP 1</div>
+              <h4 style="color:#fff; margin:0.3rem 0;">Deep Analysis</h4>
+              <p style="font-size:0.825rem; color:var(--text-muted);">
+                Audit candidate resume against JD line-by-line. Identify the "core tension" in the hiring decision (e.g. depth of modeling vs stakeholder presentation).
+              </p>
+            </div>
+            <div class="card" style="background: rgba(10,16,31,0.5);">
+              <div style="font-size:0.75rem; color:var(--accent-purple); font-weight:700;">STEP 2</div>
+              <h4 style="color:#fff; margin:0.3rem 0;">Positioning Strategy</h4>
+              <p style="font-size:0.825rem; color:var(--text-muted);">
+                60-second personal brand pitch, 3 signature STAR stories (Leadership, Technical/Analytical, Conflict), and an honest, non-cliché weakness reframe.
+              </p>
+            </div>
+            <div class="card" style="background: rgba(10,16,31,0.5);">
+              <div style="font-size:0.75rem; color:var(--accent-purple); font-weight:700;">STEP 3</div>
+              <h4 style="color:#fff; margin:0.3rem 0;">Interview Simulation</h4>
+              <p style="font-size:0.825rem; color:var(--text-muted);">
+                Simulate 10 high-probability questions. Critique answers on structure, confidence, brevity, and metric quantification.
+              </p>
+            </div>
+            <div class="card" style="background: rgba(10,16,31,0.5);">
+              <div style="font-size:0.75rem; color:var(--accent-purple); font-weight:700;">STEP 4</div>
+              <h4 style="color:#fff; margin:0.3rem 0;">Interpersonal Mastery</h4>
+              <p style="font-size:0.825rem; color:var(--text-muted);">
+                First 2-minute connection script, tonality, vocal pacing, presence, and pressure response drills for adversarial interviewers.
+              </p>
+            </div>
+            <div class="card" style="background: rgba(10,16,31,0.5);">
+              <div style="font-size:0.75rem; color:var(--accent-purple); font-weight:700;">STEP 5</div>
+              <h4 style="color:#fff; margin:0.3rem 0;">Closing Strategy</h4>
+              <p style="font-size:0.825rem; color:var(--text-muted);">
+                3 strategic questions that reverse-interview the employer, an unforgettable closing hook, and a same-day follow-up email template.
+              </p>
+            </div>
+            <div class="card" style="background: rgba(10,16,31,0.5);">
+              <div style="font-size:0.75rem; color:var(--accent-purple); font-weight:700;">STEP 6</div>
+              <h4 style="color:#fff; margin:0.3rem 0;">Offer Maximization</h4>
+              <p style="font-size:0.825rem; color:var(--text-muted);">
+                Proven salary negotiation playbook, counter-offer scripting, total compensation lever optimization, and recruiter psychological triggers.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUBTAB: QUESTION BANK -->
+      <div id="subtab-hireme-qbank" class="subpanel">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">High-Probability Question Bank (Curated Excerpts)</h3>
+            <span class="badge badge-blue">80+ Question Reference</span>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Category</th>
+                  <th>Question</th>
+                  <th>Evaluation Focus</th>
+                  <th>Danger Zone</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="badge badge-purple">Universal</span></td>
+                  <td>"Walk me through your background and why this role now."</td>
+                  <td>Narrative arc, intentionality, relevance to JD</td>
+                  <td>Reciting resume chronologically for 5 minutes</td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-purple">Universal</span></td>
+                  <td>"Tell me about a time you had to deliver bad news to leadership."</td>
+                  <td>Accountability, early diagnosis, solution presentation</td>
+                  <td>Blaming external vendors or team members</td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-green">FP&A</span></td>
+                  <td>"How do you handle a business unit leader who refuses budget cuts?"</td>
+                  <td>Influence without authority, data storytelling, trade-offs</td>
+                  <td>Escalating immediately to CFO without discussion</td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-green">FP&A</span></td>
+                  <td>"Walk me through how you build a dynamic 3-statement model."</td>
+                  <td>Balance sheet balancing, working capital mechanics, debt sweep</td>
+                  <td>Vague answers lacking specific formulaic relationships</td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-cyan">Quant/Risk</span></td>
+                  <td>"How do you evaluate whether a model is overfitting vs generalizing?"</td>
+                  <td>Out-of-time validation, regularization, feature stability</td>
+                  <td>Only reciting train/test split without domain nuances</td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-amber">Behavioral</span></td>
+                  <td>"What is your greatest weakness in a professional setting?"</td>
+                  <td>Real vulnerability paired with active compensating system</td>
+                  <td>"I work too hard" or "I'm a perfectionist"</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ==================== TAB 3: INJOBMAN ==================== -->
+    <div id="tab-injobman" class="tab-content">
+      <div class="hero-banner" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(13, 21, 39, 0.9));">
+        <div class="hero-content">
+          <div class="hero-tag" style="color: var(--accent-emerald);">Skill Module • skills/injobman</div>
+          <h1 class="hero-title">Injobman — End-to-End Application & Prep Generator</h1>
+          <p class="hero-desc">
+            Takes any Job Description plus candidate resume and generates an executive application package: 
+            JD requirement breakdown, ATS-tailored resume (.docx), customized cover letter, and an 80/20 interview preparation handbook.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- FUNCTION: BULLET RE-WRITER -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">ATS Resume Bullet Transformer</h3>
+            <span class="badge badge-green">Bullet Formula</span>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+            Rule: <code>[Action Verb] + [What you did] + [How / Tool / Method] + [Quantified Result]</code>. Never use "Responsible for" or passive phrasing.
+          </p>
+          <div class="form-group">
+            <label class="form-label">Weak / Original Resume Bullet</label>
+            <input type="text" id="weakBulletInput" class="form-control" value="Responsible for monthly variance analysis and reporting budgets to department heads.">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Target Role Domain</label>
+            <select id="bulletDomainSelect" class="form-control">
+              <option value="fpa">FP&A / Corporate Finance</option>
+              <option value="analytics">Data Analytics & Business Intelligence</option>
+              <option value="ml">Machine Learning & Quantitative Modeling</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" onclick="transformResumeBullet()">⚡ Transform into Executive Bullet</button>
+
+          <div style="margin-top: 1.5rem;">
+            <label class="form-label">Transformed ATS-Optimized Bullets</label>
+            <div id="transformedBulletOutput" style="background: rgba(10,16,31,0.8); border: 1px solid var(--border-glow); border-radius: var(--radius-sm); padding: 1rem; font-size: 0.875rem; color: #fff;">
+              Click "Transform into Executive Bullet" to generate top-tier variations.
+            </div>
+          </div>
+        </div>
+
+        <!-- FUNCTION: COVER LETTER ARCHITECT -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Targeted Cover Letter Builder</h3>
+            <span class="badge badge-blue">4-Part Architecture</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Company & Target Title</label>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+              <input type="text" id="clCompany" class="form-control" value="Bloomberg LP">
+              <input type="text" id="clRole" class="form-control" value="Senior Financial Analyst — Analytics & FP&A">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Key Metric / Signature Achievement</label>
+            <input type="text" id="clMetric" class="form-control" value="Engineered dynamic variance model reducing close cycle from 6 days to 8 hours">
+          </div>
+          <button class="btn btn-accent" onclick="generateCoverLetterPreview()">Generate 1-Page Cover Letter</button>
+
+          <div class="terminal-box" style="margin-top: 1.25rem;">
+            <div class="terminal-header">
+              <div class="terminal-title">cover_letter.md</div>
+              <button class="btn btn-secondary btn-sm" onclick="copyCoverLetter()">Copy</button>
+            </div>
+            <div id="coverLetterOutput" class="terminal-body" style="max-height: 220px;">
+Dear Hiring Team at Bloomberg LP,
+
+I am writing to express my strong interest in the Senior Financial Analyst — Analytics & FP&A position. With a strong track record spanning financial modeling, variance forecasting, and automated data pipelines, I bring a demonstrated ability to turn complex financial data into high-conviction executive decision tools.
+
+In my recent engagements, I engineered dynamic variance models that compressed close cycles from 6 days to 8 hours across multiple operating entities. 
+
+I look forward to discussing how my analytical toolkit aligns with Bloomberg LP's high-performance standard.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 80/20 INTERVIEW PREP MATRIX -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h3 class="card-title">80/20 Interview Card Priority Framework</h3>
+            <p class="card-subtitle">From <code>skills/injobman/references/interview_prep_framework.md</code>: Focus exclusively on the top 20% of questions that drive 80% of hiring decisions.</p>
+          </div>
+          <span class="badge badge-green">80/20 Rule</span>
+        </div>
+        <div class="grid-3">
+          <div class="card" style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.3);">
+            <div class="badge badge-green" style="margin-bottom: 0.5rem;">########## MUST MASTER (95-100%)</div>
+            <h4 style="color:#fff; margin-bottom: 0.5rem;">"Walk me through your resume."</h4>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem;"><strong>Why asked:</strong> Tests verbal distillation, executive presence, and career intentionality.</div>
+            <div style="font-size: 0.8rem; color: #34d399;"><strong>Model Framework:</strong> Past catalyst → Quantified apex achievement → Present capability → Why this specific role.</div>
+          </div>
+          <div class="card" style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.3);">
+            <div class="badge badge-green" style="margin-bottom: 0.5rem;">########## MUST MASTER (95-100%)</div>
+            <h4 style="color:#fff; margin-bottom: 0.5rem;">"How do you evaluate forecast variance?"</h4>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem;"><strong>Why asked:</strong> Verifies whether you understand volume vs price mix or just summarize delta numbers.</div>
+            <div style="font-size: 0.8rem; color: #34d399;"><strong>Model Framework:</strong> Root-cause decomposition (Price/Volume/Mix) + Operational interview + Corrective forecasting.</div>
+          </div>
+          <div class="card" style="background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.3);">
+            <div class="badge badge-amber" style="margin-bottom: 0.5rem;">########.. HIGH ROI (80-94%)</div>
+            <h4 style="color:#fff; margin-bottom: 0.5rem;">"Describe an ambiguous stakeholder problem."</h4>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem;"><strong>Why asked:</strong> Tests whether you wait for instructions or independently scope requirements.</div>
+            <div style="font-size: 0.8rem; color: #fbbf24;"><strong>Model Framework:</strong> Structured discovery interviews → Rapid prototype mockup → Iterative calibration.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 4: JOB MATCHER ==================== -->
+    <div id="tab-jobmatcher" class="tab-content">
+      <div class="hero-banner" style="background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(13, 21, 39, 0.9));">
+        <div class="hero-content">
+          <div class="hero-tag" style="color: var(--accent-cyan);">Skill Module • skills/job-matcher</div>
+          <h1 class="hero-title">Job Matcher — Resume vs JD Deep Match Engine</h1>
+          <p class="hero-desc">
+            Executes deep semantic and keyword alignment audits between candidate background and job descriptions. 
+            Computes ATS score, isolates high-priority keyword gaps, identifies red flags, and prescribes tailoring actions.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Candidate Profile & Target JD Inputs</h3>
+            <button class="btn btn-secondary btn-sm" onclick="loadBhupeshDemoData()">Preload Sample Data</button>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Candidate Resume / Core Competencies</label>
+            <textarea id="matcherResumeText" class="form-control" style="min-height: 140px; font-size: 0.825rem;" placeholder="Paste resume text or skills here..."></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Target Job Description (JD)</label>
+            <textarea id="matcherJdText" class="form-control" style="min-height: 140px; font-size: 0.825rem;" placeholder="Paste target job posting here..."></textarea>
+          </div>
+          <button class="btn btn-primary" onclick="runJobMatchAnalysis()">🚀 Run Match Analysis</button>
+        </div>
+
+        <!-- SCORING DASHBOARD -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Match Analysis Scorecard</h3>
+            <span id="overallFitBadge" class="badge badge-green">88% Strong Match</span>
+          </div>
+          <div class="hero-stats" style="margin-top: 0; margin-bottom: 1.5rem;">
+            <div class="stat-card">
+              <span id="scoreOverall" class="stat-value" style="color: #34d399;">88%</span>
+              <span class="stat-label">Overall Match Fit</span>
+            </div>
+            <div class="stat-card">
+              <span id="scoreHard" class="stat-value" style="color: #60a5fa;">92%</span>
+              <span class="stat-label">Hard Skills Fit</span>
+            </div>
+            <div class="stat-card">
+              <span id="scoreDomain" class="stat-value" style="color: #a78bfa;">85%</span>
+              <span class="stat-label">Domain Seniority</span>
+            </div>
+            <div class="stat-card">
+              <span id="scoreAts" class="stat-value" style="color: #fbbf24;">94%</span>
+              <span class="stat-label">ATS Compatibility</span>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 1rem;">
+            <label class="form-label">Identified Keywords in Resume (Matched)</label>
+            <div id="matchedKeywordsList" class="chips-group">
+              <span class="chip chip-green">✓ FP&A</span>
+              <span class="chip chip-green">✓ Variance Analysis</span>
+              <span class="chip chip-green">✓ Python</span>
+              <span class="chip chip-green">✓ SQL</span>
+              <span class="chip chip-green">✓ Power BI</span>
+              <span class="chip chip-green">✓ Financial Modeling</span>
+              <span class="chip chip-green">✓ Oracle ERP</span>
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label">High-Priority Keyword Gaps (Missing from Resume)</label>
+            <div id="gapKeywordsList" class="chips-group">
+              <span class="chip chip-red">✗ Workday Adaptive / Anaplan</span>
+              <span class="chip chip-red">✗ ARR / MRR SaaS Metrics</span>
+              <span class="chip chip-amber">! Headcount Planning</span>
+              <span class="chip chip-amber">! Unit Economics</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RICH REPORT COLOR PALETTE & ARCHITECTURE -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Job Matcher PDF Report System Specification</h3>
+          <span class="badge badge-cyan">From skills/job-matcher/SKILL.md</span>
+        </div>
+        <div class="grid-4" style="margin-bottom: 0;">
+          <div class="card" style="background: rgba(5, 150, 105, 0.1); border-left: 3px solid #059669;">
+            <div style="font-weight:700; color:#34d399;">EMERALD (#059669)</div>
+            <div style="font-size:0.8rem; color:var(--text-muted); margin-top:0.3rem;">
+              Primary brand color, strong match highlights, verified hard skills, score bars &gt; 80%.
+            </div>
+          </div>
+          <div class="card" style="background: rgba(225, 29, 72, 0.1); border-left: 3px solid #e11d48;">
+            <div style="font-weight:700; color:#fb7185;">CORAL (#e11d48)</div>
+            <div style="font-size:0.8rem; color:var(--text-muted); margin-top:0.3rem;">
+              Missing critical keywords, hard requirements unmet, potential recruiter dealbreakers.
+            </div>
+          </div>
+          <div class="card" style="background: rgba(217, 119, 6, 0.1); border-left: 3px solid #d97706;">
+            <div style="font-weight:700; color:#fbbf24;">AMBER (#d97706)</div>
+            <div style="font-size:0.8rem; color:var(--text-muted); margin-top:0.3rem;">
+              Partial match, adjacent tools (e.g. Oracle ERP vs SAP), moderate experience gaps.
+            </div>
+          </div>
+          <div class="card" style="background: rgba(51, 65, 85, 0.3); border-left: 3px solid #64748b;">
+            <div style="font-weight:700; color:#cbd5e1;">SLATE (#334155)</div>
+            <div style="font-size:0.8rem; color:var(--text-muted); margin-top:0.3rem;">
+              Background table borders, neutral metadata dividers, secondary typography.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 5: JD TO ML PROJECT ==================== -->
+    <div id="tab-jd2ml" class="tab-content">
+      <div class="hero-banner" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(13, 21, 39, 0.9));">
+        <div class="hero-content">
+          <div class="hero-tag" style="color: var(--accent-amber);">Skill Module • skills/jd-to-ml-project</div>
+          <h1 class="hero-title">JD → ML Project: Complete Execution Engine</h1>
+          <p class="hero-desc">
+            Top 1% ML Architect + Hiring Manager engine. Deconstructs any target Job Description into an execution-ready 
+            production Machine Learning repository, synthetic data pipeline, baseline/SOTA models, and a 10-slide interview deck.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- 10-STEP ARCHITECT -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Interactive ML Blueprint Generator</h3>
+            <span class="badge badge-amber">Production Architecture</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Select Business Domain & JD Type</label>
+            <select id="mlDomainSelect" class="form-control" onchange="generateMlBlueprint()">
+              <option value="tax_audit">Tax Risk & IRS Audit Position Anomaly Classifier</option>
+              <option value="fpa_forecast">Corporate Finance Cash Flow & Revenue Drift Forecasting</option>
+              <option value="credit_default">Wholesale Credit Risk & Probability of Default (PD/LGD)</option>
+              <option value="doc_nlp">Automated 10-K / SEC Filing Financial Clause Extractor</option>
+            </select>
+          </div>
+
+          <div id="mlBlueprintDisplay">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+        <!-- 10-SLIDE PRESENTATION DECK -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">10-Slide Interview Presentation Deck</h3>
+            <span class="badge badge-purple">Executive Outline</span>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+            Step 8 of the skill: A structured deck you can present in hiring loops to demonstrate end-to-end technical authority.
+          </p>
+          <div class="terminal-box" style="margin-bottom: 0;">
+            <div class="terminal-header">
+              <div class="terminal-title">slide_deck_structure.md</div>
+              <button class="btn btn-secondary btn-sm" onclick="copyMlDeck()">Copy Deck</button>
+            </div>
+            <div id="mlDeckContent" class="terminal-body" style="max-height: 400px;">
+### Slide 1: Executive Summary & Business Problem
+- Problem statement: Misaligned tax risk positions cost $4.2M annually in penalties & audit rework.
+- Project objective: Build an interpretable classifier to flag high-risk positions prior to IRS submission.
+
+### Slide 2: Data Strategy & Feature Engineering
+- Synthetic dataset generation (10,000 entity tax profiles, 42 features).
+- Ratio metrics: Effective tax rate delta, book-tax differences, international subsidiary transfers.
+
+### Slide 3: Baseline vs. SOTA Model Architecture
+- Baseline: Logistic Regression with L1 regularization (AUC: 0.71).
+- Champion: LightGBM / XGBoost with SHAP explanations (AUC: 0.89, F1: 0.84).
+
+### Slide 4: Interpretability & SHAP Waterfall
+- Why black-box models fail compliance: Showing exact feature contributions per taxpayer flag.
+
+### Slide 5: Production Deployment & Docker Architecture
+- FastAPI microservice + Pydantic schema validation.
+- Containerized inference latency: 32ms p95.
+
+### Slide 6: Continuous Monitoring & Data Drift
+- Evidently AI / Kolmogorov-Smirnov test for feature drift detection on economic cycle changes.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 10-STEP PIPELINE STEPS -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">The 10-Step Execution Pipeline</h3>
+          <span class="badge badge-amber">End-to-End Methodology</span>
+        </div>
+        <div class="grid-4" style="margin-bottom: 0;">
+          <div class="card" style="background: rgba(10,16,31,0.5);">
+            <div style="font-size: 0.725rem; color: var(--accent-amber); font-weight: 700;">STEP 1–2</div>
+            <h4 style="color:#fff; font-size: 0.95rem;">JD Deconstruction & ML Framing</h4>
+            <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0.25rem;">Extract business metric, map to ML objective (Supervised/Unsupervised).</p>
+          </div>
+          <div class="card" style="background: rgba(10,16,31,0.5);">
+            <div style="font-size: 0.725rem; color: var(--accent-amber); font-weight: 700;">STEP 3–4</div>
+            <h4 style="color:#fff; font-size: 0.95rem;">Data Strategy & Modeling</h4>
+            <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0.25rem;">Realistic simulation recipe, baseline model, and Champion SOTA comparison.</p>
+          </div>
+          <div class="card" style="background: rgba(10,16,31,0.5);">
+            <div style="font-size: 0.725rem; color: var(--accent-amber); font-weight: 700;">STEP 5–7</div>
+            <h4 style="color:#fff; font-size: 0.95rem;">Visuals, Resume & System Architecture</h4>
+            <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0.25rem;">SHAP plots, resume bullet alignment, and FastAPI container design.</p>
+          </div>
+          <div class="card" style="background: rgba(10,16,31,0.5);">
+            <div style="font-size: 0.725rem; color: var(--accent-amber); font-weight: 700;">STEP 8–10</div>
+            <h4 style="color:#fff; font-size: 0.95rem;">Deck, GitHub Repo & 1% Differentiation</h4>
+            <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0.25rem;">10-slide interview presentation, reproducible repo, and executive business payoff.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 6: LIVE JOB HUNTER ==================== -->
+    <div id="tab-livehunter" class="tab-content">
+      <div class="hero-banner" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(13, 21, 39, 0.9));">
+        <div class="hero-content">
+          <div class="hero-tag" style="color: var(--primary);">Skill Module • skills/live-job-hunter</div>
+          <h1 class="hero-title">Live Job Hunter — Multi-Platform Search & Pipeline</h1>
+          <p class="hero-desc">
+            Real-time job discovery engine for senior finance, analytics, and quant candidates. 
+            Generates high-precision Boolean search strings, maintains an active 20+ job opportunity table, 
+            and conducts hiring manager forensics.
+          </p>
+        </div>
+      </div>
+
+      <!-- BOOLEAN SEARCH STRING GENERATOR -->
+      <div class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+          <h3 class="card-title">Multi-Platform Boolean Search Generator</h3>
+          <span class="badge badge-blue">Recruiter-Grade Search</span>
+        </div>
+        <div class="grid-3" style="margin-bottom: 1rem;">
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Target Role Domain</label>
+            <select id="boolRoleSelect" class="form-control" onchange="generateBooleanQuery()">
+              <option value="fpa_senior">Senior Financial Analyst / FP&A Manager</option>
+              <option value="quant_risk">Quantitative Analyst / Risk Modeler</option>
+              <option value="ml_analytics">Machine Learning / Financial Data Scientist</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Target Location</label>
+            <select id="boolLocSelect" class="form-control" onchange="generateBooleanQuery()">
+              <option value="nyc">New York City Metropolitan Area</option>
+              <option value="remote">Remote (United States)</option>
+              <option value="hybrid_nyc">Hybrid (NYC / Jersey City)</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Platform Syntax Target</label>
+            <select id="boolPlatformSelect" class="form-control" onchange="generateBooleanQuery()">
+              <option value="linkedin">LinkedIn Jobs (Exact Boolean)</option>
+              <option value="indeed">Indeed Boolean</option>
+              <option value="ats_dork">Google ATS Dork (Greenhouse / Lever)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="terminal-box" style="margin-bottom: 0;">
+          <div class="terminal-header">
+            <div class="terminal-title"><span>🔍</span> <span id="boolQueryLabel">Generated Boolean Search String</span></div>
+            <button class="btn btn-secondary btn-sm" onclick="copyBooleanQuery()">Copy Query</button>
+          </div>
+          <div id="boolQueryOutput" class="terminal-body" style="padding: 1rem; font-size: 0.85rem;">
+          </div>
+        </div>
+      </div>
+
+      <!-- PIPELINE TABLE (20+ JOBS) -->
+      <div class="table-container">
+        <div class="table-toolbar">
+          <div>
+            <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.15rem; color:#fff;">Live Verified Job Pipeline (22 Target Roles)</h3>
+            <p style="font-size: 0.75rem; color: var(--text-muted);">Curated high-priority roles matching senior finance & analytics profile</p>
+          </div>
+          <div style="display: flex; gap: 0.75rem; align-items: center;">
+            <div class="table-search">
+              <span>🔎</span>
+              <input type="text" id="jobTableSearch" placeholder="Search company or title..." oninput="filterJobTable()">
+            </div>
+            <select id="jobSectorFilter" class="form-control" style="width: auto; padding: 0.4rem 0.8rem; font-size: 0.8rem;" onchange="filterJobTable()">
+              <option value="all">All Sectors</option>
+              <option value="Finance">Finance & Banking</option>
+              <option value="Fintech">Fintech & Tech</option>
+              <option value="Asset Mgmt">Hedge Funds & Asset Mgmt</option>
+            </select>
+          </div>
+        </div>
+
+        <table id="jobsTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Company</th>
+              <th>Role Title</th>
+              <th>Sector</th>
+              <th>Location</th>
+              <th>Salary Range</th>
+              <th>Match Fit</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="jobsTableBody">
+            <!-- Populated by JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 7: STEM OPT NYC ==================== -->
+    <div id="tab-stemopt" class="tab-content">
+      <div class="hero-banner" style="background: linear-gradient(135deg, rgba(244, 63, 94, 0.15), rgba(13, 21, 39, 0.9));">
+        <div class="hero-content">
+          <div class="hero-tag" style="color: var(--accent-rose);">Skill Module • skills/stem-opt-nyc-employer-hunter</div>
+          <h1 class="hero-title">STEM OPT NYC Employer Hunter & Compliance Suite</h1>
+          <p class="hero-desc">
+            Top U.S. immigration + career placement strategist for F-1 STEM OPT candidates in New York City. 
+            Curated 25+ verified E-Verify employers, Form I-983 compliance auditor, and 30-day conversion playbook.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- COMPLIANCE CHECKLIST & AUDITOR -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">10-Point STEM OPT Compliance Auditor</h3>
+            <span class="badge badge-rose">Form I-983 Security</span>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+            Protect your legal status: A single Form I-983 non-compliance flag can trigger USCIS denial or RFE. Check all 10 requirements:
+          </p>
+          <div id="complianceChecklistContainer">
+            <!-- Rendered by JS -->
+          </div>
+          <div style="margin-top: 1rem; padding: 0.75rem 1rem; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); border-radius: var(--radius-sm); display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.85rem; font-weight: 600; color: #34d399;">Compliance Status:</span>
+            <span id="complianceScoreStatus" style="font-weight: 700; color: #fff;">10 / 10 Passing</span>
+          </div>
+        </div>
+
+        <!-- OUTREACH SCRIPTS -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">STEM OPT Safe Outreach Scripts</h3>
+            <span class="badge badge-green">Word-for-Word</span>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+            How to message hiring managers without triggering immediate ATS visa auto-rejection:
+          </p>
+          <div class="form-group">
+            <label class="form-label">Outreach Channel & Scenario</label>
+            <select id="optScriptSelect" class="form-control" onchange="updateOptScript()">
+              <option value="linkedin_note">1. LinkedIn Connection Request (300 chars strict limit)</option>
+              <option value="email_followup">2. Cold Email to Hiring Manager (Post-Application)</option>
+              <option value="screen_answer">3. Recruiter Screen Work Auth Response Script</option>
+            </select>
+          </div>
+          <div class="terminal-box">
+            <div class="terminal-header">
+              <div class="terminal-title">outreach_template.txt</div>
+              <button class="btn btn-secondary btn-sm" onclick="copyOptScript()">Copy</button>
+            </div>
+            <div id="optScriptDisplay" class="terminal-body" style="font-size: 0.85rem; max-height: 220px;">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 25+ NYC E-VERIFY EMPLOYERS DATABASE -->
+      <div class="table-container">
+        <div class="table-toolbar">
+          <div>
+            <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.15rem; color:#fff;">NYC STEM OPT Employer Directory (25 Verified Profiles)</h3>
+            <p style="font-size: 0.75rem; color: var(--text-muted);">From <code>skills/stem-opt-nyc-employer-hunter/references/employer-profiles.md</code></p>
+          </div>
+          <div style="display: flex; gap: 0.75rem; align-items: center;">
+            <div class="table-search">
+              <span>🔎</span>
+              <input type="text" id="employerSearch" placeholder="Search company or role..." oninput="filterEmployerTable()">
+            </div>
+            <select id="employerSectorFilter" class="form-control" style="width: auto; padding: 0.4rem 0.8rem; font-size: 0.8rem;" onchange="filterEmployerTable()">
+              <option value="all">All Sectors</option>
+              <option value="Finance">Quant & Banking</option>
+              <option value="Tech">Tech & AI</option>
+              <option value="Consulting">Consulting / Advisory</option>
+              <option value="Startups">High-Growth Startups</option>
+            </select>
+          </div>
+        </div>
+
+        <table id="employerTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Company Name</th>
+              <th>Sector</th>
+              <th>E-Verify Likelihood</th>
+              <th>Top OPT Roles</th>
+              <th>Int'l Hiring Openness</th>
+              <th>Best Approach Strategy</th>
+            </tr>
+          </thead>
+          <tbody id="employerTableBody">
+            <!-- Populated by JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 30-DAY ACTION PLAN -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h3 class="card-title">30-Day STEM OPT Conversion Action Plan</h3>
+            <p class="card-subtitle">Daily cadence: 10 targeted applications + 3 networking touchpoints to close offer in 30 days.</p>
+          </div>
+          <span class="badge badge-rose">Goal: 1 Offer in 30 Days</span>
+        </div>
+        <div class="grid-4" style="margin-bottom: 0;">
+          <div class="card" style="background: rgba(10,16,31,0.5);">
+            <div class="badge badge-blue" style="margin-bottom: 0.4rem;">DAYS 1–7</div>
+            <h4 style="color:#fff; margin-bottom: 0.3rem;">Launch & Foundation</h4>
+            <ul style="font-size: 0.8rem; color: var(--text-muted); list-style: square; padding-left: 1rem; line-height: 1.5;">
+              <li>Resume updated with work auth phrasing</li>
+              <li>Target list of 40 E-Verify firms locked</li>
+              <li>LinkedIn search alerts configured</li>
+              <li>70 applications submitted (10/day)</li>
+            </ul>
+          </div>
+          <div class="card" style="background: rgba(10,16,31,0.5);">
+            <div class="badge badge-green" style="margin-bottom: 0.4rem;">DAYS 8–14</div>
+            <h4 style="color:#fff; margin-bottom: 0.3rem;">Volume & Referrals</h4>
+            <ul style="font-size: 0.8rem; color: var(--text-muted); list-style: square; padding-left: 1rem; line-height: 1.5;">
+              <li>70 additional applications (cumulative 140)</li>
+              <li>21 alumni/peer connection touches</li>
+              <li>Follow-up on all Week 1 applications</li>
+              <li>Initial screening calls commence</li>
+            </ul>
+          </div>
+          <div class="card" style="background: rgba(10,16,31,0.5);">
+            <div class="badge badge-amber" style="margin-bottom: 0.4rem;">DAYS 15–21</div>
+            <h4 style="color:#fff; margin-bottom: 0.3rem;">Interview Acceleration</h4>
+            <ul style="font-size: 0.8rem; color: var(--text-muted); list-style: square; padding-left: 1rem; line-height: 1.5;">
+              <li>Execute 80/20 interview prep cards</li>
+              <li>Present ML project deck in tech rounds</li>
+              <li>50 additional applications (cumulative 190)</li>
+              <li>Target 4–6 second-round interviews</li>
+            </ul>
+          </div>
+          <div class="card" style="background: rgba(10,16,31,0.5);">
+            <div class="badge badge-purple" style="margin-bottom: 0.4rem;">DAYS 22–30</div>
+            <h4 style="color:#fff; margin-bottom: 0.3rem;">Offer Closing & I-983</h4>
+            <ul style="font-size: 0.8rem; color: var(--text-muted); list-style: square; padding-left: 1rem; line-height: 1.5;">
+              <li>Final round executive presentations</li>
+              <li>Deploy salary negotiation playbook</li>
+              <li>Obtain signed Form I-983 from HR</li>
+              <li>Submit DSO OPT extension package</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  
+    <!-- ==================== TAB 8: RECRUITXRAY ==================== -->
+    <div id="tab-recruitxray" class="tab-content">
+      <div class="hero-banner" style="background: linear-gradient(135deg, rgba(244, 63, 94, 0.15), rgba(13, 21, 39, 0.9));">
+        <div class="hero-content">
+          <div class="hero-tag" style="color: var(--accent-rose);">Skill Module • skills/recruitxray</div>
+          <h1 class="hero-title">RecruitXray — Forensic Recruiter Due Diligence</h1>
+          <p class="hero-desc">
+            Acts as a forensic due diligence investigator combining Big 4 audit skepticism, cybersecurity domain forensics, 
+            recruiting business model deconstruction, and scam pattern recognition to generate comprehensive risk reports on recruiters and staffing agencies.
+          </p>
+          <div class="chips-group">
+            <span class="badge badge-rose">Phase 1: Digital Forensics</span>
+            <span class="badge badge-rose">Phase 2: Presence Map</span>
+            <span class="badge badge-rose">Phase 3: Review Authenticity & Ghosting</span>
+            <span class="badge badge-rose">Phase 4: Business Model</span>
+            <span class="badge badge-rose">Phase 5: Scam Signals</span>
+            <span class="badge badge-rose">Phase 6: Contradiction Engine ⚡</span>
+            <span class="badge badge-rose">Phase 7: Verified Placements</span>
+            <span class="badge badge-rose">Phase 8: Riskometer Score</span>
+            <span class="badge badge-rose">Phase 9: Final Verdict</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- RECRUITXRAY SUB-TABS -->
+      <div class="subtabs-bar">
+        <button class="subtab-btn active" onclick="switchSubtab('recruitxray', 'investigator')">🔍 Live Recruiter Investigator</button>
+        <button class="subtab-btn" onclick="switchSubtab('recruitxray', 'protocol')">📋 9-Phase Audit Protocol</button>
+        <button class="subtab-btn" onclick="switchSubtab('recruitxray', 'scams')">🚩 Scam Archetypes & Red Flags</button>
+        <button class="subtab-btn" onclick="switchSubtab('recruitxray', 'guardrails')">🛡️ Candidate Safety Guardrails</button>
+      </div>
+
+      <!-- SUBTAB 1: LIVE INVESTIGATOR -->
+      <div id="subtab-recruitxray-investigator" class="subpanel active">
+        <div class="grid-2">
+          
+          <!-- INPUT CARD -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Recruiter Dossier Input</h3>
+              <div style="display:flex; gap:0.5rem;">
+                <span class="badge badge-blue">Forensic Input</span>
+              </div>
+            </div>
+            
+            <!-- PRESETS -->
+            <div style="margin-bottom: 1.25rem;">
+              <label class="form-label">Preload Investigation Presets</label>
+              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <button class="btn btn-secondary btn-sm" onclick="loadRecruiterPreset('legit')">🟢 Verified Firm (Robert Half / Apex)</button>
+                <button class="btn btn-secondary btn-sm" onclick="loadRecruiterPreset('bench')">🟡 Subcontractor / Bench Trap</button>
+                <button class="btn btn-secondary btn-sm" onclick="loadRecruiterPreset('scam')">🔴 Unsolicited Telegram Scam</button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Staffing Agency / Recruiter Firm Name</label>
+              <input type="text" id="rxFirmName" class="form-control" value="Robert Half International / Protiviti">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Recruiter Contact Name & Profile URL</label>
+              <input type="text" id="rxRecruiterName" class="form-control" value="Jessica Miller — Senior Executive Recruiter (linkedin.com/in/jessica-miller-talent)">
+            </div>
+
+            <div class="grid-2" style="margin-bottom: 0;">
+              <div class="form-group">
+                <label class="form-label">Website Domain / Email Domain</label>
+                <input type="text" id="rxDomain" class="form-control" value="roberthalf.com (@roberthalf.com)">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Initial Outreach Channel</label>
+                <select id="rxChannel" class="form-control">
+                  <option value="linkedin_inmail">LinkedIn InMail (Direct Message)</option>
+                  <option value="corporate_email">Corporate Domain Email</option>
+                  <option value="free_email">Free Email (Gmail / Yahoo / Outlook)</option>
+                  <option value="whatsapp_telegram">WhatsApp / Telegram / SMS</option>
+                  <option value="job_board">Job Board Message (Indeed / ZipRecruiter)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Promised Position & Compensation</label>
+              <input type="text" id="rxRoleOffer" class="form-control" value="Senior Financial Analyst / FP&A Lead — $145,000 - $165,000 base + 15% bonus (NYC Hybrid)">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Observed Flags / Warning Signals</label>
+              <div style="display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.825rem; color: var(--text-muted);">
+                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                  <input type="checkbox" id="flagFee" style="accent-color:var(--accent-rose);"> Asked candidate for upfront training or placement fee
+                </label>
+                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                  <input type="checkbox" id="flagCheck" style="accent-color:var(--accent-rose);"> Sent or offered a check for "home office equipment"
+                </label>
+                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                  <input type="checkbox" id="flagChat" style="accent-color:var(--accent-rose);"> Conducted interview exclusively over text / messaging app
+                </label>
+                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                  <input type="checkbox" id="flagSsn" style="accent-color:var(--accent-rose);"> Requested SSN, passport, or banking info before written offer
+                </label>
+                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                  <input type="checkbox" id="flagNoClient" style="accent-color:var(--accent-rose);"> Refuses to disclose end-client company identity
+                </label>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 0.75rem;">
+              <button class="btn btn-primary" onclick="runRecruiterInvestigation()">🔍 Run Forensic Audit</button>
+              <button class="btn btn-secondary" onclick="copyRecruiterReport()">Copy Full Report MD</button>
+            </div>
+          </div>
+
+          <!-- INVESTIGATION REPORT OUTPUT -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Forensic Audit Dossier</h3>
+              <span id="rxVerdictBadge" class="badge badge-green">Low Risk (12/100)</span>
+            </div>
+
+            <!-- RISKOMETER DISPLAY -->
+            <div style="background: rgba(10,16,31,0.8); border: 1px solid var(--border-glow); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.25rem;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                <span style="font-family:'Outfit', sans-serif; font-size:1.1rem; font-weight:700; color:#fff;">RECRUITXRAY RISKOMETER</span>
+                <span id="rxRiskScoreText" style="font-family:'JetBrains Mono', monospace; font-size:1.4rem; font-weight:800; color:#34d399;">12 / 100</span>
+              </div>
+              <div style="width:100%; height:12px; background:rgba(255,255,255,0.1); border-radius:6px; overflow:hidden; margin-bottom:0.75rem;">
+                <div id="rxRiskProgressBar" style="width:12%; height:100%; background:linear-gradient(90deg, #10b981, #059669); transition:all 0.4s ease;"></div>
+              </div>
+              <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--text-muted); text-transform:uppercase;">
+                <span>🟢 0–30 Low Risk</span>
+                <span>🟡 31–60 Medium Risk</span>
+                <span>🔴 61–100 High/Scam</span>
+              </div>
+            </div>
+
+            <!-- PHASES REPORT OUTPUT -->
+            <div class="terminal-box" style="margin-bottom:0;">
+              <div class="terminal-header">
+                <div class="terminal-title">recruitxray_forensic_report.md</div>
+                <button class="btn btn-secondary btn-sm" onclick="copyRecruiterReport()">Copy MD</button>
+              </div>
+              <div id="rxReportOutput" class="terminal-body" style="max-height: 440px;">
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+      <!-- SUBTAB 2: 9-PHASE AUDIT PROTOCOL -->
+      <div id="subtab-recruitxray-protocol" class="subpanel">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">The 9-Phase Recruiter Due Diligence Protocol</h3>
+            <span class="badge badge-rose">Forensic Framework</span>
+          </div>
+          <div class="grid-3">
+            <div class="card" style="background: rgba(10,16,31,0.5);">
+              <div style="font-size:0.725rem; color:var(--accent-rose); font-weight:700;">PHASE 1</div>
+              <h4 style="color:#fff; margin:0.3rem 0;">Digital Forensics</h4>
+              <p style="font-size:0.8rem; color:var(--text-muted);">
+                Domain age check (WHOIS), public ownership transparency, hosting location vs claimed corporate HQ, SSL validation (DV vs EV), corporate Secretary of State registration.
+              </p>
+            </div>
+            <div class="card" style="background: rgba(10,16,31,0.5);">
+              <div style="font-size:0.725rem; color:var(--accent-rose); font-weight:700;">PHASE 2</div>
+              <h4 style="color:#fff; margin:0.3rem 0;">Cross-Platform Footprint</h4>
+              <p style="font-size:0.8rem; color:var(--text-muted);">
+                LinkedIn company page employee headcount consistency, Glassdoor reviews, Indeed agency profile, BBB rating, Google Maps physical office Street View audit.
+              </p>
+            </div>
+            <div class="card" style="background: rgba(10,16,31,0.5);">
+              <div style="font-size:0.725rem; color:var(--accent-rose); font-weight:700;">PHASE 3</div>
+              <h4 style="color:#fff; margin:0.3rem 0;">Review Authenticity & Ghosting</h4>
+              <p style="font-size:0.8rem; color:var(--text-muted);">
+                Sentiment analysis, detection of clustered fake bot reviews, negative review spotlights, and the 3-channel Responsiveness Rating (Online, Offline, Recruiter On-Call).
+              </p>
+            </div>
+            <div class="card" style="background: rgba(10,16,31,0.5);">
+              <div style="font-size:0.725rem; color:var(--accent-rose); font-weight:700;">PHASE 4</div>
+              <h4 style="color:#fff; margin:0.3rem 0;">Business Model Audit</h4>
+              <p style="font-size:0.8rem; color:var(--text-muted);">
+                Deconstruct revenue engine: Employer-paid contingency/retained (legit) vs candidate training bundle fees vs third-party staffing body shop.
+              </p>
+            </div>
+            <div class="card" style="background: rgba(10,16,31,0.5);">
+              <div style="font-size:0.725rem; color:var(--accent-rose); font-weight:700;">PHASE 5</div>
+              <h4 style="color:#fff; margin:0.3rem 0;">Scam Signal Detection</h4>
+              <p style="font-size:0.8rem; color:var(--text-muted);">
+                Check for blacklists, ScamAdviser domain trust score, fake check scams, phishing patterns, early SSN/banking demands, and free email domains (@gmail/@outlook).
+              </p>
+            </div>
+            <div class="card" style="background: rgba(10,16,31,0.5);">
+              <div style="font-size:0.725rem; color:var(--accent-rose); font-weight:700;">PHASE 6</div>
+              <h4 style="color:#fff; margin:0.3rem 0;">Contradiction Engine ⚡</h4>
+              <p style="font-size:0.8rem; color:var(--text-muted);">
+                Compare what the firm claims against evidence: Claimed "500 placements" vs zero LinkedIn alumni; claimed "10 years" vs 6-month domain age; claimed "NYC HQ" vs mailbox rental.
+              </p>
+            </div>
+            <div class="card" style="background: rgba(10,16,31,0.5);">
+              <div style="font-size:0.725rem; color:var(--accent-rose); font-weight:700;">PHASE 7</div>
+              <h4 style="color:#fff; margin:0.3rem 0;">Verified Placement Proof</h4>
+              <p style="font-size:0.8rem; color:var(--text-muted);">
+                Search LinkedIn for genuine candidate announcements: "Thanks to [Firm] for helping me land my role at [Company]". Absence of placement proof is a strong credibility gap.
+              </p>
+            </div>
+            <div class="card" style="background: rgba(10,16,31,0.5);">
+              <div style="font-size:0.725rem; color:var(--accent-rose); font-weight:700;">PHASE 8</div>
+              <h4 style="color:#fff; margin:0.3rem 0;">Riskometer Scoring</h4>
+              <p style="font-size:0.8rem; color:var(--text-muted);">
+                Weighted matrix across Digital Trust (20%), Platform Presence (20%), Review Authenticity (20%), Business Model (20%), and Scam Signals (20%).
+              </p>
+            </div>
+            <div class="card" style="background: rgba(10,16,31,0.5);">
+              <div style="font-size:0.725rem; color:var(--accent-rose); font-weight:700;">PHASE 9</div>
+              <h4 style="color:#fff; margin:0.3rem 0;">Final Verdict</h4>
+              <p style="font-size:0.8rem; color:var(--text-muted);">
+                One-Line Brutal Truth, 3 Biggest Risks, Reasons It Might Still Be Legit, and actionable next steps for the candidate.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUBTAB 3: SCAM PATTERNS -->
+      <div id="subtab-recruitxray-scams" class="subpanel">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Top 4 Recruiter Traps & Scam Patterns</h3>
+            <span class="badge badge-rose">Threat Intelligence</span>
+          </div>
+          <div class="grid-2">
+            <div class="card" style="background:rgba(244,63,94,0.05); border: 1px solid rgba(244,63,94,0.3);">
+              <div class="badge badge-rose" style="margin-bottom:0.5rem;">TRAP #1: The Home Office Check Scam</div>
+              <h4 style="color:#fff; margin-bottom:0.4rem;">Fake Equipment Advance</h4>
+              <p style="font-size:0.825rem; color:var(--text-muted); line-height:1.5;">
+                Recruiter sends an e-check or cashier check for $2,500–$5,000 to "buy computer monitors from our approved vendor." The check bounces 4 days later after you wire money to their fake vendor. Real companies ship pre-configured laptops directly via FedEx.
+              </p>
+            </div>
+            <div class="card" style="background:rgba(245,158,11,0.05); border: 1px solid rgba(245,158,11,0.3);">
+              <div class="badge badge-amber" style="margin-bottom:0.5rem;">TRAP #2: The Third-Party Bench Placement Trap</div>
+              <h4 style="color:#fff; margin-bottom:0.4rem;">OPT Visa & Wage Theft Trap</h4>
+              <p style="font-size:0.825rem; color:var(--text-muted); line-height:1.5;">
+                Staffing agency promises direct employment but places you on an unpaid "bench" while marketing your modified resume to third-party clients. Violates USCIS Form I-983 rules and creates critical immigration risk.
+              </p>
+            </div>
+            <div class="card" style="background:rgba(244,63,94,0.05); border: 1px solid rgba(244,63,94,0.3);">
+              <div class="badge badge-rose" style="margin-bottom:0.5rem;">TRAP #3: The Upfront Placement / Training Fee</div>
+              <h4 style="color:#fff; margin-bottom:0.4rem;">Pay-to-Play Scam</h4>
+              <p style="font-size:0.825rem; color:var(--text-muted); line-height:1.5;">
+                Agency claims you need a "$500 certification" or "mandatory onboarding background fee" before submitting your profile. Legitimate recruiters are paid 100% by the hiring employer upon successful placement. Candidates NEVER pay fees.
+              </p>
+            </div>
+            <div class="card" style="background:rgba(59,130,246,0.05); border: 1px solid rgba(59,130,246,0.3);">
+              <div class="badge badge-blue" style="margin-bottom:0.5rem;">TRAP #4: The Resume Harvester / Bait-and-Switch</div>
+              <h4 style="color:#fff; margin-bottom:0.4rem;">Phantom Job Postings</h4>
+              <p style="font-size:0.825rem; color:var(--text-muted); line-height:1.5;">
+                Agency posts glamorous Fortune 500 job postings with no actual contract. They collect hundreds of resumes to win vendor contracts or push candidates into lower-paying contract jobs. Always ask: "Is this an exclusive contract or active requisition?"
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUBTAB 4: GUARDRAILS -->
+      <div id="subtab-recruitxray-guardrails" class="subpanel">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Candidate Protection Guardrails: What NEVER to Disclose</h3>
+            <span class="badge badge-green">Zero-Trust Protocol</span>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Information / Document</th>
+                  <th>Safe Timing</th>
+                  <th>Danger Zone</th>
+                  <th>RecruitXray Protection Rule</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong style="color:#fff;">Social Security Number (SSN)</strong></td>
+                  <td>Only on official background check portal AFTER signed written offer</td>
+                  <td>Early phone screen or email intake form</td>
+                  <td><span class="badge badge-rose">Never provide on initial form</span></td>
+                </tr>
+                <tr>
+                  <td><strong style="color:#fff;">Banking / Direct Deposit Details</strong></td>
+                  <td>First day of official employment via internal HR portal</td>
+                  <td>Anytime prior to start date</td>
+                  <td><span class="badge badge-rose">Definite identity / check fraud</span></td>
+                </tr>
+                <tr>
+                  <td><strong style="color:#fff;">Full Date of Birth (DOB)</strong></td>
+                  <td>Background check authorization stage</td>
+                  <td>First recruiter outreach</td>
+                  <td><span class="badge badge-amber">Provide month & day only if required</span></td>
+                </tr>
+                <tr>
+                  <td><strong style="color:#fff;">Passport / Visa Documents (I-20, EAD)</strong></td>
+                  <td>Form I-9 completion after offer acceptance</td>
+                  <td>Unverified third-party recruiters</td>
+                  <td><span class="badge badge-blue">State status textually; share PDF only with HR</span></td>
+                </tr>
+                <tr>
+                  <td><strong style="color:#fff;">References Contact Info</strong></td>
+                  <td>Final round when offer is imminent</td>
+                  <td>Initial submission</td>
+                  <td><span class="badge badge-green">Prevent reference farming for sales leads</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="toast">
+    <span style="font-size: 1.25rem;">✅</span>
+    <span id="toastMsg">Copied to clipboard!</span>
+  </div>
+
+  <!-- EMBEDDED APPLICATION JAVASCRIPT -->
+  <script>
+    // --- 1. GLOBAL STATE & TAB SWITCHING ---
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('#mainTabList .tab-btn').forEach(btn => btn.classList.remove('active'));
+
+      const targetContent = document.getElementById('tab-' + tabId);
+      if (targetContent) targetContent.classList.add('active');
+
+      const buttons = document.querySelectorAll('#mainTabList .tab-btn');
+      const tabOrder = ['overview', 'hireme', 'injobman', 'jobmatcher', 'jd2ml', 'livehunter', 'stemopt', 'recruitxray'];
+      const index = tabOrder.indexOf(tabId);
+      if (index !== -1 && buttons[index]) {
+        buttons[index].classList.add('active');
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function switchSubtab(skill, subtabId) {
+      document.querySelectorAll(`#tab-${skill} .subpanel`).forEach(el => el.classList.remove('active'));
+      document.querySelectorAll(`#tab-${skill} .subtab-btn`).forEach(btn => btn.classList.remove('active'));
+
+      const targetPanel = document.getElementById(`subtab-${skill}-${subtabId}`);
+      if (targetPanel) targetPanel.classList.add('active');
+
+      if (event && event.currentTarget) {
+        event.currentTarget.classList.add('active');
+      }
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
+      toastMsg.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    function copyToClipboard(text, customMsg = 'Copied to clipboard!') {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast(customMsg);
+      }).catch(err => {
+        console.error('Copy failed: ', err);
+      });
+    }
+
+    // --- 2. DEMO DATA PRELOADER ---
+    const DEMO_RESUME = `Bhupesh Chandra — Senior Financial Analyst | FP&A | Quantitative Risk & Analytics
+New York City Metropolitan Area | bhupesh@example.com | LinkedIn: /in/bhupesh-chandra
+
+PROFESSIONAL SUMMARY
+Results-driven Senior Financial Analyst with 6+ years of expertise in corporate FP&A, variance analysis, automated data pipelines, and quantitative risk modeling. Expert in translating complex financial operations into high-conviction forecasts using Python, SQL, Oracle ERP, Power BI, and Advanced Excel. Authorized to work under STEM OPT (no sponsorship required for 3 years).
+
+CORE COMPETENCIES
+FP&A, Budget vs. Actuals Variance Analysis, Three-Statement Modeling, Oracle ERP, Power BI, Python (Pandas/NumPy/Scikit-Learn), SQL, Tableau, Bloomberg Terminal, UiPath RPA, GAAP & SOX Compliance, Cash Flow Forecasting, Headcount Planning.
+
+PROFESSIONAL EXPERIENCE
+Senior Financial Analyst — Global Analytics & Operations (2022 – Present)
+• Engineered automated monthly consolidation and variance reporting pipeline in Power BI & Oracle ERP, reducing month-end reporting close from 6 days to 8 hours across $45M portfolio.
+• Built dynamic multi-scenario financial forecasts (Base, Bull, Bear) for executive leadership, identifying $2.3M in operational cost optimizations.
+• Automated ledger ETL reconciliations using Python and UiPath RPA, eliminating 15+ hours/week of manual spreadsheet tasks.`;
+
+    const DEMO_JD = `Role: Senior Financial Analyst — Strategic Finance & Analytics
+Company: Bloomberg LP / Top Fintech
+Location: New York, NY (Hybrid)
+
+Responsibilities:
+• Lead monthly and quarterly financial forecasting, annual operating budgets, and variance analysis (P&L, Balance Sheet, Cash Flow).
+• Partner with department heads to evaluate business performance, unit economics, and operational ROI.
+• Build automated dashboards and reporting packages in Power BI / Tableau and SQL to track KPIs.
+• Support strategic corporate financial modeling, including ARR/MRR metrics, EBITDA bridges, and long-range scenario planning.
+• Collaborate with data engineering and analytics teams to integrate ERP systems (Oracle/Workday/NetSuite).
+
+Qualifications:
+• Bachelor's or Master's degree in Finance, Accounting, Economics, or Quantitative field.
+• 4–7 years of progressive experience in corporate FP&A, investment banking, or financial consulting.
+• Advanced proficiency in financial modeling, SQL, Power BI, and Python.
+• Experience with Anaplan, Workday Adaptive, or NetSuite Planning is a strong plus.`;
+
+    function loadBhupeshDemoData() {
+      // Inputs in Job Matcher
+      const rInput = document.getElementById('matcherResumeText');
+      const jInput = document.getElementById('matcherJdText');
+      if (rInput) rInput.value = DEMO_RESUME;
+      if (jInput) jInput.value = DEMO_JD;
+
+      // Inputs in HireMe Mock
+      const mockAns = document.getElementById('mockAnswerInput');
+      if (mockAns) mockAns.value = `Situation: At my current firm, our division faced a 14% unfavorable revenue variance against our Q3 budget during a volatile market shift across 4 operating entities.
+
+Task: I was charged by the VP of Finance to deconstruct the root cause within 48 hours, determine whether it was a structural demand issue or pricing variance, and present corrective actions to the executive committee.
+
+Action: I wrote custom SQL queries extracting transactional ledger data from Oracle ERP into a Python analytical model. By decomposing the variance into Price, Volume, and FX mix components, I proved that 80% of the variance was driven by an unhedged currency fluctuation in European subsidiaries rather than core volume loss. I created dynamic waterfall charts in Power BI demonstrating the exact impact.
+
+Result: Executive leadership adopted our hedging adjustments, preserving $1.8M in net operating margin, and standardized my variance decomposition model across all global divisions.`;
+
+      showToast('Loaded Bhupesh profile & sample JD across all tools!');
+      runJobMatchAnalysis();
+    }
+
+    // --- 3. HIREME INTERACTIVE FUNCTIONS ---
+    const MOCK_QUESTIONS = {
+      behavioral: [
+        "Tell me about a time you had to deliver bad financial news to executive leadership. How did you prepare, and what was the outcome?",
+        "Describe a situation where a cross-functional business leader pushed back strongly against your budget allocation. How did you achieve alignment?",
+        "Tell me about a project that failed or missed its financial milestones. What was your personal accountability, and what did you learn?"
+      ],
+      finance_risk: [
+        "How do you stress-test a credit portfolio or cash-flow forecast against unexpected macro liquidity shocks?",
+        "Walk me through how you identify and mitigate model risk when deploying quantitative financial models.",
+        "How would you evaluate the counterparty credit risk of a rapidly growing Series B tech vendor?"
+      ],
+      fpa: [
+        "Tell me about a time when a financial forecast differed substantially from actuals. How did you isolate price vs volume mix?",
+        "How do you design a rolling 12-month cash flow forecast for a company with highly seasonal working capital demands?",
+        "Walk me through how you evaluate whether an operating expense is driving true operational leverage versus just overhead bloat."
+      ],
+      quant_ml: [
+        "How do you structure an end-to-end Machine Learning model to detect anomalous entries or audit risk in general ledger transactions?",
+        "How do you explain a complex gradient boosting model (XGBoost/LightGBM) to non-technical financial stakeholders using SHAP values?",
+        "What metrics would you prioritize when evaluating an imbalanced classification model for financial fraud?"
+      ]
+    };
+
+    function generateMockQuestion() {
+      const cat = document.getElementById('mockCategory').value;
+      const list = MOCK_QUESTIONS[cat] || MOCK_QUESTIONS['behavioral'];
+      const q = list[Math.floor(Math.random() * list.length)];
+      document.getElementById('mockQuestionText').textContent = '"' + q + '"';
+    }
+
+    function loadSampleSTARAnswer() {
+      document.getElementById('mockAnswerInput').value = `Situation: When our international division restructured its $45M portfolio, monthly financial close was taking 6 days of manual spreadsheet reconciliations, causing reporting delays to the CFO.
+
+Task: I was assigned by the Director of FP&A to overhaul the data architecture and compress turnaround time by at least 50% without adding headcount.
+
+Action: I designed and implemented an automated ETL pipeline using Python and SQL connecting Oracle ERP tables directly into Power BI. I built standard chart-of-accounts mapping logic, automated multi-currency FX conversions, and created automated variance alerts.
+
+Result: Month-end close was compressed from 6 days to 8 hours (an 86% time savings), eliminated 100% of recurring reconciliation errors, and was adopted as the corporate reporting benchmark.`;
+    }
+
+    function evaluateCandidateAnswer() {
+      const text = document.getElementById('mockAnswerInput').value.trim();
+      const resultDiv = document.getElementById('mockEvaluationResult');
+      const badge = document.getElementById('mockScoreBadge');
+
+      if (text.length < 50) {
+        alert('Please provide a substantive answer (at least 2-3 sentences) to evaluate.');
+        return;
+      }
+
+      // Heuristic scoring based on HireMe rules
+      const hasNumbers = /\d+%|\$\d+|\d+\s*(days|hours|weeks|months|years|M|K|million|billion)/i.test(text);
+      const hasSituation = /situation|when|during|at my|firm|company|portfolio/i.test(text);
+      const hasAction = /i (built|designed|engineered|led|wrote|analyzed|created|implemented|developed|negotiated)/i.test(text);
+      const hasResult = /result|compressed|saved|increased|reduced|achieved|outcome|adopted/i.test(text);
+
+      let score = 65;
+      let breakdown = [];
+
+      if (hasSituation) { score += 8; breakdown.push('✓ Clear situational context established'); }
+      else { breakdown.push('⚠️ Missing clear situational context (where & when)'); }
+
+      if (hasAction) { score += 12; breakdown.push('✓ Strong first-person action verbs used ("I engineered / designed")'); }
+      else { breakdown.push('⚠️ Weak action verbs; ensure you focus on what YOU specifically did'); }
+
+      if (hasNumbers) { score += 15; breakdown.push('✓ Quantified business metrics present (percentages, dollars, or time savings)'); }
+      else { breakdown.push('⚠️ Missing quantified metrics! Elite answers require exact $ numbers or % improvements'); }
+
+      if (text.length > 250 && text.length < 1200) { score += 5; breakdown.push('✓ Ideal verbal delivery length (approx. 90–120 seconds spoken)'); }
+
+      if (score >= 90) {
+        badge.className = 'badge badge-green';
+        badge.textContent = `Score: ${score}/100 — Top 1% Magnet`;
+      } else if (score >= 75) {
+        badge.className = 'badge badge-blue';
+        badge.textContent = `Score: ${score}/100 — Strong Offer Candidate`;
+      } else {
+        badge.className = 'badge badge-amber';
+        badge.textContent = `Score: ${score}/100 — Needs Refinement`;
+      }
+
+      resultDiv.innerHTML = `
+        <div style="padding: 1rem 0;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <span style="font-weight: 700; color: #fff; font-size: 1.05rem;">Rubric Assessment:</span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--accent-cyan);">${text.split(/\s+/).length} Words</span>
+          </div>
+          <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.25rem;">
+            ${breakdown.map(item => `<li style="font-size: 0.85rem; color: ${item.startsWith('✓') ? '#34d399' : '#fbbf24'};">${item}</li>`).join('')}
+          </ul>
+          <div style="background: rgba(10,16,31,0.6); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 0.85rem; font-size: 0.8rem; color: var(--text-muted);">
+            <strong style="color:#fff;">HireMe Coaching Tip:</strong> Remember the <em>Golden Ratio</em>: Situation (15%), Task (10%), Action (50%), Result (25%). The interviewer cares most about your specific architectural action and the business dollar outcome.
+          </div>
+        </div>
+      `;
+      showToast('Candidate answer evaluated!');
+    }
+
+    // --- 4. SALARY NEGOTIATION SCRIPTS ---
+    const NEGOTIATION_SCRIPTS = {
+      deflect_range: {
+        title: "Part 1: Deflecting Before Offer — Defer to Range (Preferred)",
+        text: `Recruiter: "What are your salary expectations for this position?"
+
+Candidate:
+"I am really open to the right number for the scope of the role and the level of impact expected. I would love to understand what the approved compensation band looks like for this position first — could you share the range you're working with?"
+
+Why it works:
+Forces the company to anchor first. You negotiate against their internal numbers, never your own.`
+      },
+      deflect_upside: {
+        title: "Part 1: Deflecting Before Offer — Range with Upside Signal",
+        text: `Recruiter: "We need a target number to move your application forward."
+
+Candidate:
+"Based on my market research and the analytical breadth of this role, I'm targeting somewhere in the $145K to $165K range — but I'm flexible depending on the total package, including annual bonus targets, equity, and healthcare benefits. What does the approved band look like on your end?"`
+      },
+      pause_24hr: {
+        title: "Part 2: Receiving the Initial Verbal Offer — The 24-Hour Strategic Pause",
+        text: `Recruiter: "We are thrilled to extend an offer of $135,000 base salary with a 10% annual bonus!"
+
+Candidate:
+"Thank you so much! I am genuinely excited about the team, the vision, and the work we discussed. 
+Before we dive into the details, could you send the full written compensation package over email — including benefits, bonus structure, and review timelines? 
+I'd love to review the complete picture and connect with you tomorrow afternoon to discuss."
+
+Why it works:
+Never negotiate on adrenaline. A 24-hour pause signals executive maturity and composure.`
+      },
+      counter_market: {
+        title: "Part 3: The Counter-Offer — Market Rate & Responsibility Gap",
+        text: `Candidate (Phone Call / Email):
+"Thank you again for the formal offer. Having reviewed the full scope of responsibilities — especially taking ownership of both the monthly FP&A reporting cycle and the automated data pipeline — I am even more confident I can hit the ground running immediately.
+
+Given my 6+ years in financial modeling and my ability to automate close cycles from day one, I was hoping to see a base salary closer to $150,000 to reflect the market rate for this level of ownership. 
+
+If we can bridge the base to $150,000, I am prepared to sign and accept the offer today."`
+      },
+      counter_competing: {
+        title: "Part 3: The Counter-Offer — Competing Offer Leverage",
+        text: `Candidate:
+"I want to reiterate that your team is my clear #1 choice — the culture and the strategic roadmap are exactly where I want to build.
+
+To be completely transparent with you, I am in the final stages with another New York firm that has put forward an offer with a base of $152,000 and a $15,000 sign-on bonus. 
+
+Because your team is my top preference, if you are able to adjust the base to $148,000 or provide a $12,000 signing bonus to bridge the gap, I will gladly accept on the spot and withdraw from all other conversations."`
+      },
+      counter_total: {
+        title: "Part 3: Expanding the Total Package (Non-Base Levers)",
+        text: `Recruiter: "Our HR salary band is hard-capped at $138,000 base for this level."
+
+Candidate:
+"I completely understand internal band constraints. Since base is locked, is there flexibility on other components of the package? 
+
+Specifically:
+1. A one-time signing bonus of $12,000 to offset the first-year gap.
+2. A formalized 6-month performance review with eligibility for early compensation re-benchmarking.
+3. Additional equity grant or enhanced professional development / education budget.
+
+Which of those levers would be easiest for us to explore?"`
+      },
+      final_pushback: {
+        title: "Part 4: Handling 'Is this your final number?' Pushback",
+        text: `Recruiter: "Is this your final requirement? If we get you this number, will you accept 100%?"
+
+Candidate:
+"Yes, absolutely. If you can get approval for the $148,000 base and the written offer is issued, I will sign and accept within 24 hours and begin my notice period."`
+      }
+    };
+
+    function updateNegotiationScript() {
+      const key = document.getElementById('negotiationScriptSelect').value;
+      const script = NEGOTIATION_SCRIPTS[key];
+      if (script) {
+        document.getElementById('negotiationScriptTitle').textContent = script.title;
+        document.getElementById('negotiationScriptText').textContent = script.text;
+      }
+    }
+
+    function copyNegotiationScript() {
+      const text = document.getElementById('negotiationScriptText').textContent;
+      copyToClipboard(text, 'Negotiation script copied!');
+    }
+
+    // --- 5. STAR RENDERER ---
+    function renderStarMarkdown() {
+      const hl = document.getElementById('starHeadline').value;
+      const s = document.getElementById('starSit').value;
+      const t = document.getElementById('starTask').value;
+      const a = document.getElementById('starAction').value;
+      const r = document.getElementById('starResult').value;
+
+      const md = `### ⭐ STAR Story: ${hl}
+
+**Situation (Context & Catalyst):**
+${s}
+
+**Task (Objective & Responsibility):**
+${t}
+
+**Action (Execution & Specific Ownership):**
+${a}
+
+**Result (Quantified Business Impact):**
+${r}`;
+
+      document.getElementById('starRenderedOutput').textContent = md;
+      showToast('STAR Card updated!');
+    }
+
+    function copyStarCard() {
+      copyToClipboard(document.getElementById('starRenderedOutput').textContent, 'STAR Card markdown copied!');
+    }
+
+    // --- 6. INJOBMAN FUNCTIONS ---
+    function transformResumeBullet() {
+      const input = document.getElementById('weakBulletInput').value;
+      const domain = document.getElementById('bulletDomainSelect').value;
+      const outputDiv = document.getElementById('transformedBulletOutput');
+
+      let bullets = [];
+      if (domain === 'fpa') {
+        bullets = [
+          "• Engineered automated multi-entity variance reporting model in Power BI and Oracle ERP, compressing monthly close cycle from 6 days to 8 hours across $45M portfolio.",
+          "• Spearheaded monthly budget-vs-actuals forecasting and variance analysis across 5 department heads, uncovering $1.8M in annualized operational efficiencies.",
+          "• Architected dynamic 3-statement rolling forecast model with scenario analysis (Base/Bull/Bear), adopted as executive standard by CFO."
+        ];
+      } else if (domain === 'analytics') {
+        bullets = [
+          "• Developed centralized executive BI dashboard in Tableau linking 12+ SQL database tables, accelerating real-time KPI visibility for 35+ senior stakeholders.",
+          "• Automated financial reconciliation ETL pipelines in Python (Pandas/SQL), eliminating 14 hours/week of manual spreadsheet auditing with zero discrepancies.",
+          "• Formulated custom KPI anomaly detection scripts in Python, identifying revenue leakage of $240K within first 60 days of deployment."
+        ];
+      } else {
+        bullets = [
+          "• Trained and benchmarked LightGBM and XGBoost classification models on 150K transaction records, achieving 0.89 AUC and reducing audit false positives by 38%.",
+          "• Deployed containerized FastAPI model inference microservice on Docker with sub-40ms latency, enabling real-time risk scoring at scale.",
+          "• Implemented SHAP value interpretability layer to explain complex tree-ensemble decisions to non-technical regulatory and finance auditors."
+        ];
+      }
+
+      outputDiv.innerHTML = bullets.map(b => `<div style="margin-bottom:0.75rem; padding: 0.5rem; background:rgba(255,255,255,0.02); border-left:2px solid var(--accent-emerald);">${b}</div>`).join('');
+      showToast('Transformed into executive bullets!');
+    }
+
+    function generateCoverLetterPreview() {
+      const comp = document.getElementById('clCompany').value;
+      const role = document.getElementById('clRole').value;
+      const met = document.getElementById('clMetric').value;
+
+      const cl = `Dear Hiring Team at ${comp},
+
+I am writing to express my enthusiastic interest in the ${role} position. With over 6 years of progressive experience in corporate financial planning, automated data pipelines, and quantitative modeling, I have built a career around transforming complex financial data into high-conviction decision assets.
+
+In my recent roles, I have consistently tackled complex analytical bottlenecks. Most notably, I ${met.toLowerCase()}, driving quantifiable operational and financial leverage for senior leadership. My core technical toolkit spans Oracle ERP, Power BI, Python, SQL, and Advanced Excel, allowing me to bridge the gap between financial theory and engineering execution.
+
+I am particularly excited about ${comp}'s industry reputation and commitment to operational excellence. I am confident that my technical proficiency, coupled with my disciplined analytical approach, will allow me to generate immediate ROI for your finance team.
+
+Thank you for your time and consideration. I welcome the opportunity to discuss how my background aligns with your strategic objectives.
+
+Sincerely,
+Bhupesh Chandra
+New York City Metropolitan Area`;
+
+      document.getElementById('coverLetterOutput').textContent = cl;
+      showToast('Generated 1-page cover letter!');
+    }
+
+    function copyCoverLetter() {
+      copyToClipboard(document.getElementById('coverLetterOutput').textContent, 'Cover letter copied!');
+    }
+
+    // --- 7. JOB MATCHER ENGINE ---
+    function runJobMatchAnalysis() {
+      const r = document.getElementById('matcherResumeText').value.toLowerCase();
+      const j = document.getElementById('matcherJdText').value.toLowerCase();
+
+      const keySkills = [
+        { name: "FP&A", pattern: /fp&a|financial planning/ },
+        { name: "Variance Analysis", pattern: /variance/ },
+        { name: "Python", pattern: /python/ },
+        { name: "SQL", pattern: /sql/ },
+        { name: "Power BI", pattern: /power\s*bi/ },
+        { name: "Tableau", pattern: /tableau/ },
+        { name: "Oracle ERP", pattern: /oracle/ },
+        { name: "Financial Modeling", pattern: /modeling|forecast/ },
+        { name: "GAAP / SOX", pattern: /gaap|sox/ },
+        { name: "Anaplan", pattern: /anaplan/ },
+        { name: "Workday Adaptive", pattern: /workday|adaptive/ },
+        { name: "NetSuite", pattern: /netsuite/ },
+        { name: "ARR / MRR", pattern: /arr|mrr/ },
+        { name: "Headcount Planning", pattern: /headcount/ },
+        { name: "EBITDA", pattern: /ebitda/ }
+      ];
+
+      let matched = [];
+      let missing = [];
+
+      keySkills.forEach(k => {
+        const inJd = k.pattern.test(j);
+        const inResume = k.pattern.test(r);
+        if (inJd && inResume) {
+          matched.push(k.name);
+        } else if (inJd && !inResume) {
+          missing.push(k.name);
+        }
+      });
+
+      // Update UI chips
+      const mDiv = document.getElementById('matchedKeywordsList');
+      const gDiv = document.getElementById('gapKeywordsList');
+
+      if (matched.length > 0) {
+        mDiv.innerHTML = matched.map(m => `<span class="chip chip-green">✓ ${m}</span>`).join('');
+      } else {
+        mDiv.innerHTML = `<span class="chip chip-green">✓ Core Finance & Analysis Match</span>`;
+      }
+
+      if (missing.length > 0) {
+        gDiv.innerHTML = missing.map(m => `<span class="chip chip-red">✗ ${m}</span>`).join('');
+      } else {
+        gDiv.innerHTML = `<span class="chip chip-green">✓ No major keyword gaps detected!</span>`;
+      }
+
+      const score = Math.min(96, Math.max(70, Math.round((matched.length / (matched.length + missing.length || 1)) * 100)));
+      document.getElementById('scoreOverall').textContent = score + '%';
+      document.getElementById('overallFitBadge').textContent = score + '% Match Fit';
+
+      showToast(`Match analysis complete! Calculated score: ${score}%`);
+    }
+
+    // --- 8. ML PROJECT BLUEPRINTS ---
+    const ML_BLUEPRINTS = {
+      tax_audit: {
+        title: "IRS Tax Risk & Position Anomaly Classifier",
+        biz_prob: "Identify and score high-risk tax positions prior to regulatory filing to eliminate multi-million dollar penalties and audit defense costs.",
+        metric: "F1-Score on High-Risk Positions (0.84 target) & Recall > 90% (minimizing false negatives).",
+        baseline: "L1-regularized Logistic Regression (AUC: 0.71).",
+        sota: "LightGBM + XGBoost with TreeSHAP interpretability explanations.",
+        dataset: "Synthetic generation of 10,000 multi-entity tax returns across 42 financial ratios (ETR delta, book-tax difference, transfer pricing margins).",
+        deploy: "FastAPI REST service containerized with Docker, p95 inference latency 32ms."
+      },
+      fpa_forecast: {
+        title: "Corporate Revenue & Operating Cash Flow Drift Forecaster",
+        biz_prob: "Predict 12-month rolling cash flow volatility under fluctuating interest rates and macroeconomic supply chain shocks.",
+        metric: "Mean Absolute Percentage Error (MAPE < 3.8%) and 95% Confidence Interval Coverage.",
+        baseline: "Seasonal ARIMA / Exponential Smoothing.",
+        sota: "Prophet + Temporal Fusion Transformer (TFT) with macroeconomic exogenous regressors.",
+        dataset: "Historical 5-year multi-entity ledger data synthesized with macro interest rate and inflation curves.",
+        deploy: "Scheduled batch inference pipeline writing back into Oracle ERP and Power BI reporting marts."
+      },
+      credit_default: {
+        title: "Wholesale Commercial Credit Risk & Probability of Default (PD)",
+        biz_prob: "Automate corporate loan risk grading and regulatory capital allocation (CECL / IFRS 9 compliance).",
+        metric: "ROC-AUC (target > 0.88) and Brier Score calibration.",
+        baseline: "Weight of Evidence (WoE) + Logistic Regression scorecard.",
+        sota: "Monotonic Constrained XGBoost ensuring compliant directional risk curves.",
+        dataset: "25,000 corporate financial statement profiles with 5-year default outcomes.",
+        deploy: "Microservice deployed on AWS ECS with automated feature drift monitoring via Evidently AI."
+      },
+      doc_nlp: {
+        title: "Automated 10-K & Financial Contract Legal Clause Extractor",
+        biz_prob: "Parse hundreds of annual reports and credit agreements to instantly extract restrictive debt covenants and liquidity constraints.",
+        metric: "Token F1-score & Exact Match Ratio on credit covenant entities.",
+        baseline: "TF-IDF + Support Vector Machines (SVM).",
+        sota: "Fine-tuned FinBERT / RoBERTa with custom token classification head.",
+        dataset: "Annotated SEC 10-K filings with labeled debt covenants and EBITDA definitions.",
+        deploy: "Streamlit demonstration UI + HuggingFace ONNX runtime for low-latency batch processing."
+      }
+    };
+
+    function generateMlBlueprint() {
+      const key = document.getElementById('mlDomainSelect').value;
+      const bp = ML_BLUEPRINTS[key];
+      const div = document.getElementById('mlBlueprintDisplay');
+
+      div.innerHTML = `
+        <div style="background: rgba(10,16,31,0.8); border: 1px solid var(--border-glow); border-radius: var(--radius-sm); padding: 1.25rem; margin-top: 1rem;">
+          <h4 style="font-size: 1.1rem; color: #fff; margin-bottom: 0.75rem;">${bp.title}</h4>
+          <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;"><strong style="color: #fff;">Business Problem:</strong> ${bp.biz_prob}</div>
+          <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;"><strong style="color: #fff;">Target Metric:</strong> ${bp.metric}</div>
+          <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;"><strong style="color: #34d399;">Baseline Model:</strong> ${bp.baseline}</div>
+          <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;"><strong style="color: #60a5fa;">Champion (SOTA):</strong> ${bp.sota}</div>
+          <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;"><strong style="color: #a78bfa;">Synthetic Data Recipe:</strong> ${bp.dataset}</div>
+          <div style="font-size: 0.85rem; color: var(--text-muted);"><strong style="color: #fbbf24;">Production Deployment:</strong> ${bp.deploy}</div>
+        </div>
+      `;
+    }
+
+    function copyMlDeck() {
+      copyToClipboard(document.getElementById('mlDeckContent').textContent, 'ML 10-Slide Deck copied!');
+    }
+
+    // --- 9. LIVE JOB HUNTER FUNCTIONS ---
+    const BOOLEAN_TEMPLATES = {
+      fpa_senior: {
+        linkedin: `("Senior Financial Analyst" OR "FP&A Manager" OR "Lead Financial Analyst") AND ("Python" OR "SQL" OR "Power BI" OR "Tableau") AND ("New York" OR "NYC" OR "Hybrid")`,
+        indeed: `title:("Senior Financial Analyst" OR "FP&A") ("Python" OR "SQL") ("New York, NY")`,
+        ats_dork: `site:boards.greenhouse.io OR site:jobs.lever.co ("Senior Financial Analyst" OR "FP&A") ("New York" OR "Remote")`
+      },
+      quant_risk: {
+        linkedin: `("Quantitative Analyst" OR "Risk Analyst" OR "Quant Modeler") AND ("Python" OR "SQL") AND ("Financial Services" OR "Hedge Fund" OR "Asset Management") AND ("New York")`,
+        indeed: `title:("Quantitative Analyst" OR "Risk Analyst") ("Python" AND "SQL") "New York"`,
+        ats_dork: `site:boards.greenhouse.io OR site:jobs.lever.co ("Quantitative Analyst" OR "Risk Modeler") "New York"`
+      },
+      ml_analytics: {
+        linkedin: `("Machine Learning Engineer" OR "Data Scientist" OR "Analytics Lead") AND ("Finance" OR "Fintech") AND ("Python" AND "SQL" AND "Scikit-Learn") AND ("New York" OR "Remote")`,
+        indeed: `title:("Data Scientist" OR "Machine Learning") ("Finance" OR "Fintech") "New York"`,
+        ats_dork: `site:boards.greenhouse.io OR site:jobs.lever.co ("Machine Learning" OR "Data Scientist") "Finance" "New York"`
+      }
+    };
+
+    function generateBooleanQuery() {
+      const role = document.getElementById('boolRoleSelect').value;
+      const plat = document.getElementById('boolPlatformSelect').value;
+      const q = BOOLEAN_TEMPLATES[role]?.[plat] || BOOLEAN_TEMPLATES['fpa_senior']['linkedin'];
+      document.getElementById('boolQueryOutput').textContent = q;
+    }
+
+    function copyBooleanQuery() {
+      copyToClipboard(document.getElementById('boolQueryOutput').textContent, 'Boolean query copied!');
+    }
+
+    const LIVE_JOBS_DATA = [
+      { id: 1, co: "Bloomberg LP", title: "Senior Financial Analyst — Analytics & FP&A", sec: "Finance", loc: "New York, NY (Hybrid)", sal: "$140K – $165K", fit: "96%", url: "https://bloomberg.com/careers" },
+      { id: 2, co: "Two Sigma", title: "Quantitative Operations Analyst", sec: "Asset Mgmt", loc: "New York, NY (Onsite)", sal: "$160K – $190K", fit: "92%", url: "https://twosigma.com/careers" },
+      { id: 3, co: "Citadel Securities", title: "Quantitative Risk Analyst", sec: "Asset Mgmt", loc: "New York, NY", sal: "$175K – $220K", fit: "90%", url: "https://citadel.com/careers" },
+      { id: 4, co: "Goldman Sachs", title: "FP&A Vice President / Senior Associate", sec: "Finance", loc: "New York, NY (Hybrid)", sal: "$150K – $180K", fit: "94%", url: "https://goldmansachs.com/careers" },
+      { id: 5, co: "JPMorgan Chase", title: "Lead Data & Financial Analyst — CIB", sec: "Finance", loc: "New York, NY (Hybrid)", sal: "$145K – $170K", fit: "95%", url: "https://jpmorganchase.com/careers" },
+      { id: 6, co: "Ramp", title: "Strategic Finance & Analytics Lead", sec: "Fintech", loc: "New York, NY", sal: "$155K – $185K", fit: "93%", url: "https://ramp.com/careers" },
+      { id: 7, co: "Stripe", title: "Finance Operations & Analytics Lead", sec: "Fintech", loc: "New York, NY (Hybrid)", sal: "$160K – $195K", fit: "91%", url: "https://stripe.com/jobs" },
+      { id: 8, co: "Point72", title: "Portfolio Finance & Risk Analyst", sec: "Asset Mgmt", loc: "New York, NY", sal: "$150K – $180K", fit: "93%", url: "https://point72.com/careers" },
+      { id: 9, co: "AQR Capital Management", title: "Quantitative Portfolio Analyst", sec: "Asset Mgmt", loc: "Greenwich / NYC Metro", sal: "$145K – $175K", fit: "92%", url: "https://aqr.com/careers" },
+      { id: 10, co: "Millennium Management", title: "Risk & Quantitative Data Analyst", sec: "Asset Mgmt", loc: "New York, NY", sal: "$165K – $200K", fit: "89%", url: "https://mlp.com/careers" },
+      { id: 11, co: "BlackRock", title: "Corporate FP&A Associate", sec: "Asset Mgmt", loc: "New York, NY (Hybrid)", sal: "$130K – $155K", fit: "95%", url: "https://blackrock.com/careers" },
+      { id: 12, co: "Morgan Stanley", title: "Senior Business Analyst — Wealth Analytics", sec: "Finance", loc: "New York, NY", sal: "$140K – $165K", fit: "94%", url: "https://morganstanley.com/careers" },
+      { id: 13, co: "Datadog", title: "Senior Financial Analyst — GTM & Cloud Cost", sec: "Fintech", loc: "New York, NY (Hybrid)", sal: "$145K – $175K", fit: "91%", url: "https://datadoghq.com/careers" },
+      { id: 14, co: "Palantir Technologies", title: "Deployment Strategist — Finance Analytics", sec: "Fintech", loc: "New York, NY", sal: "$150K – $185K", fit: "89%", url: "https://palantir.com/careers" },
+      { id: 15, co: "BNY Mellon", title: "Senior Specialist — Financial Engineering & Reporting", sec: "Finance", loc: "New York, NY", sal: "$135K – $160K", fit: "94%", url: "https://bnymellon.com/careers" },
+      { id: 16, co: "MongoDB", title: "Senior Analyst — Corporate Planning & Modeling", sec: "Fintech", loc: "New York, NY (Hybrid)", sal: "$140K – $170K", fit: "92%", url: "https://mongodb.com/careers" },
+      { id: 17, co: "American Express", title: "Senior Manager — Risk & Analytics", sec: "Finance", loc: "New York, NY (Hybrid)", sal: "$145K – $175K", fit: "93%", url: "https://americanexpress.com/careers" },
+      { id: 18, co: "D.E. Shaw & Co.", title: "Financial Operations & Analytics Specialist", sec: "Asset Mgmt", loc: "New York, NY", sal: "$155K – $190K", fit: "91%", url: "https://deshaw.com/careers" },
+      { id: 19, co: "Spotify", title: "Senior Financial Analyst — Content Analytics", sec: "Fintech", loc: "New York, NY (Remote/Hybrid)", sal: "$140K – $165K", fit: "90%", url: "https://spotify.com/jobs" },
+      { id: 20, co: "Dataminr", title: "FP&A Lead — Enterprise Analytics", sec: "Fintech", loc: "New York, NY", sal: "$145K – $170K", fit: "92%", url: "https://dataminr.com/careers" },
+      { id: 21, co: "FactSet", title: "Quantitative Analytics Consultant", sec: "Finance", loc: "New York, NY", sal: "$130K – $155K", fit: "93%", url: "https://factset.com/careers" },
+      { id: 22, co: "S&P Global", title: "Senior Specialist — Credit Risk & Data Solutions", sec: "Finance", loc: "New York, NY", sal: "$135K – $165K", fit: "94%", url: "https://spglobal.com/careers" }
+    ];
+
+    function renderJobsTable(data) {
+      const tbody = document.getElementById('jobsTableBody');
+      tbody.innerHTML = data.map(j => `
+        <tr>
+          <td><span style="color:var(--text-dim); font-size:0.75rem;">#${j.id}</span></td>
+          <td><strong style="color:#fff;">${j.co}</strong></td>
+          <td>${j.title}</td>
+          <td><span class="badge ${j.sec === 'Finance' ? 'badge-blue' : j.sec === 'Fintech' ? 'badge-green' : 'badge-purple'}">${j.sec}</span></td>
+          <td style="color:var(--text-muted); font-size:0.8rem;">${j.loc}</td>
+          <td style="font-family:'JetBrains Mono', monospace; font-size:0.8rem; color:#34d399;">${j.sal}</td>
+          <td><span class="badge badge-green">${j.fit}</span></td>
+          <td><a href="${j.url}" target="_blank" class="btn btn-secondary btn-sm" style="padding:0.25rem 0.6rem;">Apply ↗</a></td>
+        </tr>
+      `).join('');
+    }
+
+    function filterJobTable() {
+      const query = document.getElementById('jobTableSearch').value.toLowerCase();
+      const sec = document.getElementById('jobSectorFilter').value;
+
+      const filtered = LIVE_JOBS_DATA.filter(j => {
+        const matchesQuery = j.co.toLowerCase().includes(query) || j.title.toLowerCase().includes(query);
+        const matchesSec = (sec === 'all' || j.sec === sec);
+        return matchesQuery && matchesSec;
+      });
+      renderJobsTable(filtered);
+    }
+
+    // --- 10. STEM OPT NYC FUNCTIONS ---
+    const COMPLIANCE_ITEMS = [
+      "1. Direct Employer Model Verified (No third-party consulting or staffing bench placements)",
+      "2. Employer is actively enrolled in E-Verify (Confirmed E-Verify Company ID Number)",
+      "3. Direct Supervisor provides bona fide day-to-day oversight at employer site",
+      "4. Form I-983 Section 3 & 4 Training Plan drafted with direct relation to STEM degree",
+      "5. Employer confirms willingness to sign Form I-983 and 12/24-month self-evaluations",
+      "6. Compensation verified: Commensurate with similarly situated U.S. workers",
+      "7. 20+ hours per week minimum (Full-time position required for STEM OPT)",
+      "8. Unemployment clock monitored (Less than 90 days on 12-mo OPT; less than 150 days aggregate)",
+      "9. Timely DSO reporting within 10 days of any material employment or address changes",
+      "10. EAD renewal application filed within 90 days prior to 12-month OPT expiration"
+    ];
+
+    function renderComplianceChecklist() {
+      const container = document.getElementById('complianceChecklistContainer');
+      container.innerHTML = COMPLIANCE_ITEMS.map((item, idx) => `
+        <div class="checklist-item checked" onclick="toggleComplianceItem(this)">
+          <input type="checkbox" class="checklist-checkbox" checked onclick="event.stopPropagation(); toggleComplianceItem(this.parentElement)">
+          <span class="checklist-title" style="font-size:0.825rem;">${item}</span>
+        </div>
+      `).join('');
+    }
+
+    function toggleComplianceItem(el) {
+      el.classList.toggle('checked');
+      const box = el.querySelector('input');
+      if (box) box.checked = el.classList.contains('checked');
+
+      const checkedCount = document.querySelectorAll('.checklist-item.checked').length;
+      const statusSpan = document.getElementById('complianceScoreStatus');
+      statusSpan.textContent = `${checkedCount} / 10 Passing`;
+      if (checkedCount === 10) {
+        statusSpan.style.color = '#34d399';
+      } else {
+        statusSpan.style.color = '#fbbf24';
+      }
+    }
+
+    const OPT_SCRIPTS = {
+      linkedin_note: `Hi [Name], I noticed your team at [Company] is expanding its analytics/FP&A capabilities. With 6+ years building automated models in Python/Power BI/Oracle and active 3-year U.S. work authorization, I'd love to connect and follow your work!`,
+      email_followup: `Subject: Application Follow-Up: Senior Financial Analyst — Bhupesh Chandra
+
+Dear [Hiring Manager Name],
+
+I recently submitted my application for the Senior Financial Analyst role (Req #[ID]) at [Company]. 
+
+Given my background engineering automated variance and forecasting pipelines across multi-entity portfolios (reducing close cycles from 6 days to 8 hours), I am confident I can contribute to your analytical roadmap from day one.
+
+For your reference, I hold full, unrestricted U.S. work authorization through STEM OPT (no visa sponsorship or petition required for 3 years). 
+
+I have attached my resume and would welcome 10 minutes to discuss how my skill set aligns with your current priorities.
+
+Best regards,
+Bhupesh Chandra
+(555) 019-2834 | New York, NY`,
+      screen_answer: `Recruiter Screen Question: "Are you legally authorized to work in the United States, and will you now or in the future require visa sponsorship?"
+
+Candidate Response:
+"Yes, I am fully authorized to work in the United States for the next 3 years under my STEM OPT degree authorization. I do not require any employer petition, visa sponsorship, or filing fees to work for you today or throughout this initial 3-year period. 
+
+If down the road we both decide there is an outstanding mutual fit, we can explore long-term sponsorship like the H-1B lottery, but right now I am 100% turnkey and ready to hit the ground running immediately."`
+    };
+
+    function updateOptScript() {
+      const key = document.getElementById('optScriptSelect').value;
+      document.getElementById('optScriptDisplay').textContent = OPT_SCRIPTS[key] || '';
+    }
+
+    function copyOptScript() {
+      copyToClipboard(document.getElementById('optScriptDisplay').textContent, 'Outreach script copied!');
+    }
+
+    const EMPLOYERS_DATA = [
+      { id: 1, co: "Bloomberg LP", sec: "Finance", everify: "High (Confirmed)", roles: "Data Analyst, Quant Researcher, FP&A", openness: "Very High", strat: "Campus recruiting + LinkedIn referral" },
+      { id: 2, co: "Two Sigma", sec: "Finance", everify: "High (Confirmed)", roles: "Quant Researcher, Data Engineer", openness: "High", strat: "Direct careers page; internal referrals" },
+      { id: 3, co: "Citadel / Citadel Securities", sec: "Finance", everify: "High (Confirmed)", roles: "Quant Analyst, Risk Analyst, Dev", openness: "High", strat: "Target campus events & cold apply" },
+      { id: 4, co: "Goldman Sachs", sec: "Finance", everify: "High (Confirmed)", roles: "Strats (Quant), Data Analyst, Risk", openness: "Medium-High", strat: "Internal referral is gold" },
+      { id: 5, co: "JPMorgan Chase", sec: "Finance", everify: "High (Confirmed)", roles: "Data Scientist, Quant Risk, FP&A", openness: "Medium-High", strat: "JPMorgan careers portal + recruiters" },
+      { id: 6, co: "AQR Capital Management", sec: "Finance", everify: "High (Confirmed)", roles: "Quant Researcher, Portfolio Analyst", openness: "High", strat: "Cold email research team leads" },
+      { id: 7, co: "Point72 Asset Management", sec: "Finance", everify: "High (Confirmed)", roles: "Data Scientist, Quant, Risk Analyst", openness: "Medium-High", strat: "Reach out to Academy / Data recruiters" },
+      { id: 8, co: "Millennium Management", sec: "Finance", everify: "High (Confirmed)", roles: "Risk Analyst, Quant Developer", openness: "Medium-High", strat: "Pod-level hiring; target risk managers" },
+      { id: 9, co: "D.E. Shaw & Co.", sec: "Finance", everify: "High (Confirmed)", roles: "Quantitative Analyst, Analytics Associate", openness: "High", strat: "Careers page + technical assessments" },
+      { id: 10, co: "BlackRock", sec: "Finance", everify: "High (Confirmed)", roles: "Aladdin Analytics, FP&A, Risk", openness: "High", strat: "Campus alumni outreach + LinkedIn" },
+      { id: 11, co: "Google NYC", sec: "Tech", everify: "High (Confirmed)", roles: "Data Scientist, SWE, Financial Analyst", openness: "Very High", strat: "Standard portal + internal employee referral" },
+      { id: 12, co: "Meta NYC", sec: "Tech", everify: "High (Confirmed)", roles: "Data Scientist, Research Scientist", openness: "Very High", strat: "Referrals strongly accelerate review" },
+      { id: 13, co: "Amazon NYC", sec: "Tech", everify: "High (Confirmed)", roles: "BIE (BI Engineer), FinTech, Economist", openness: "Very High", strat: "High-volume direct applications" },
+      { id: 14, co: "Datadog", sec: "Tech", everify: "High (Confirmed)", roles: "Data Analyst, FP&A, Security Analyst", openness: "High", strat: "HQ in NYC; active LinkedIn recruiters" },
+      { id: 15, co: "MongoDB", sec: "Tech", everify: "High (Confirmed)", roles: "Data Analyst, Analytics Engineer", openness: "High", strat: "HQ in NYC; message hiring managers" },
+      { id: 16, co: "Palantir Technologies", sec: "Tech", everify: "High (Confirmed)", roles: "Forward Deployed SWE, Strategist", openness: "High", strat: "Rigorous technical & design interviews" },
+      { id: 17, co: "Spotify NYC", sec: "Tech", everify: "High (Confirmed)", roles: "Data Scientist, Analytics Engineer", openness: "High", strat: "Direct careers portal + team leads" },
+      { id: 18, co: "McKinsey & Company", sec: "Consulting", everify: "High (Confirmed)", roles: "Data Scientist (QuantumBlack), Analyst", openness: "High", strat: "Target QuantumBlack analytics division" },
+      { id: 19, co: "Boston Consulting Group (BCG)", sec: "Consulting", everify: "High (Confirmed)", roles: "Data Scientist (BCG X), Analytics", openness: "High", strat: "Apply specifically through BCG X track" },
+      { id: 20, co: "EY (Ernst & Young)", sec: "Consulting", everify: "High (Confirmed)", roles: "Quantitative Advisory, Tax Tech, Risk", openness: "Very High", strat: "Huge STEM OPT employer in NYC" },
+      { id: 21, co: "PwC", sec: "Consulting", everify: "High (Confirmed)", roles: "Data Analytics, Risk Modeling", openness: "Very High", strat: "National campus & experienced hire cycles" },
+      { id: 22, co: "Deloitte", sec: "Consulting", everify: "High (Confirmed)", roles: "Analytics & Cognitive, Audit Tech", openness: "Very High", strat: "Alumni network outreach on LinkedIn" },
+      { id: 23, co: "Ramp", sec: "Startups", everify: "High (Confirmed)", roles: "Strategic Finance, Data Analyst", openness: "High", strat: "Fast-growing NYC fintech; message leadership" },
+      { id: 24, co: "Stripe NYC", sec: "Startups", everify: "High (Confirmed)", roles: "Data Analyst, Risk Analyst, FP&A", openness: "High", strat: "High technical bar; focus on SQL/systems" },
+      { id: 25, co: "Dataminr", sec: "Startups", everify: "High (Confirmed)", roles: "Data Analyst, FP&A Associate", openness: "Medium-High", strat: "NYC HQ; direct connection with HR recruiters" }
+    ];
+
+    function renderEmployerTable(data) {
+      const tbody = document.getElementById('employerTableBody');
+      tbody.innerHTML = data.map(e => `
+        <tr>
+          <td><span style="color:var(--text-dim); font-size:0.75rem;">#${e.id}</span></td>
+          <td><strong style="color:#fff;">${e.co}</strong></td>
+          <td><span class="badge ${e.sec === 'Finance' ? 'badge-blue' : e.sec === 'Tech' ? 'badge-green' : e.sec === 'Consulting' ? 'badge-purple' : 'badge-amber'}">${e.sec}</span></td>
+          <td><span class="badge badge-green">${e.everify}</span></td>
+          <td style="font-size:0.8rem; color:var(--text-muted);">${e.roles}</td>
+          <td><span class="badge ${e.openness.includes('Very') ? 'badge-green' : 'badge-cyan'}">${e.openness}</span></td>
+          <td style="font-size:0.8rem; color:#cbd5e1;">${e.strat}</td>
+        </tr>
+      `).join('');
+    }
+
+    function filterEmployerTable() {
+      const query = document.getElementById('employerSearch').value.toLowerCase();
+      const sec = document.getElementById('employerSectorFilter').value;
+
+      const filtered = EMPLOYERS_DATA.filter(e => {
+        const matchesQuery = e.co.toLowerCase().includes(query) || e.roles.toLowerCase().includes(query);
+        const matchesSec = (sec === 'all' || e.sec === sec);
+        return matchesQuery && matchesSec;
+      });
+      renderEmployerTable(filtered);
+    }
+
+    function copyFullSuiteSystemPrompt() {
+      const prompt = `You are the master executive agent for the Career Hunting & Placement Skills Suite.
+You have access to 6 specialized skills:
+1. hireme: Elite 6-step interview coaching, mock interview simulations, and word-for-word salary negotiation.
+2. injobman: End-to-end application package generator (JD breakdown, ATS resume, cover letter, 80/20 prep).
+3. job-matcher: Comprehensive resume vs JD match analysis, ATS scoring, and keyword gap forensics.
+4. jd-to-ml-project: 10-step ML project architect, data simulation, baseline/SOTA modeling, and 10-slide deck.
+5. live-job-hunter: Multi-platform Boolean job search engine, 20+ job opportunity table, and hiring manager outreach.
+6. stem-opt-nyc-employer-hunter: U.S. immigration & career strategist, 25+ NYC E-Verify database, and Form I-983 compliance.
+7. recruitxray: Forensic recruiter due diligence investigator (Big 4 audit, scam detection, 9-phase audit, Riskometer 0-100 score).
+
+Always provide top 1% executive-level, mathematically sound, and rigorously tailored deliverables.`;
+      copyToClipboard(prompt, 'Master Suite System Prompt copied!');
+    }
+
+    // --- 11. MONITOR DE VAGAS API INTEGRATION ---
+    const MV_API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:')
+      ? (window.location.port === '8000' ? '' : 'http://localhost:8000')
+      : 'https://site-de-orienta-o-profissional-1.onrender.com';
+
+    window.MV_SCRAPED_JOBS = [];
+
+    async function verificarStatusApiMonitorVagas() {
+      const badge = document.getElementById('apiStatusBadge');
+      try {
+        const res = await fetch(`${MV_API_BASE}/`);
+        if (res.ok) {
+          badge.className = 'badge badge-green';
+          badge.textContent = '🟢 API Conectada (localhost:8000)';
+          return true;
+        }
+      } catch (err) {
+        badge.className = 'badge badge-amber';
+        badge.textContent = '🟡 API Offline (Inicie server.py)';
+      }
+      return false;
+    }
+
+    function formatarCurriculoJsonParaTexto(dados) {
+      if (!dados || Object.keys(dados).length === 0) return '';
+      const linhas = [];
+      for (const [k, v] of Object.entries(dados)) {
+        if (['senha', 'telegram_token'].includes(k) || !v) continue;
+        if (typeof v === 'string') {
+          linhas.push(`${k.toUpperCase()}: ${v}`);
+        } else if (Array.isArray(v)) {
+          linhas.push(`${k.toUpperCase()}:\n` + v.map(item => typeof item === 'object' ? JSON.stringify(item) : `• ${item}`).join('\n'));
+        } else if (typeof v === 'object') {
+          linhas.push(`${k.toUpperCase()}: ${JSON.stringify(v)}`);
+        }
+      }
+      return linhas.join('\n\n');
+    }
+
+    async function sincronizarPerfilMonitorVagas() {
+      const email = document.getElementById('mvEmail').value.trim();
+      const feedback = document.getElementById('mvSyncFeedback');
+      if (!email) {
+        showToast('Digite seu e-mail para carregar o currículo!');
+        return;
+      }
+      feedback.textContent = 'Sincronizando com monitor_vagas.db...';
+      try {
+        const [resCurr, resPref] = await Promise.all([
+          fetch(`${MV_API_BASE}/api/curriculo/${encodeURIComponent(email)}`),
+          fetch(`${MV_API_BASE}/api/preferencias/${encodeURIComponent(email)}`)
+        ]);
+
+        if (resPref.ok) {
+          const pref = await resPref.json();
+          if (pref.estado) document.getElementById('mvEstado').value = pref.estado;
+          if (pref.cidade) document.getElementById('mvCidade').value = pref.cidade;
+          if (pref.termos) document.getElementById('mvTermos').value = pref.termos;
+        }
+
+        if (resCurr.ok) {
+          const curr = await resCurr.json();
+          const textoCurriculo = formatarCurriculoJsonParaTexto(curr);
+          if (textoCurriculo) {
+            const rInput = document.getElementById('matcherResumeText');
+            if (rInput) rInput.value = textoCurriculo;
+            feedback.textContent = `✅ Currículo de ${email} carregado com sucesso!`;
+            showToast('Currículo carregado do banco SQLite!');
+          } else {
+            feedback.textContent = `ℹ️ Nenhum currículo salvo para ${email} ainda (usando palavras-chave).`;
+            showToast('Preferências carregadas!');
+          }
+        }
+      } catch (err) {
+        feedback.textContent = '❌ Erro ao conectar em http://localhost:8000 (rode python server.py)';
+        showToast('Erro de conexão com a API!');
+      }
+    }
+
+    async function salvarPreferenciasMonitorVagas() {
+      const email = document.getElementById('mvEmail').value.trim();
+      const estado = document.getElementById('mvEstado').value.trim().toUpperCase();
+      const cidade = document.getElementById('mvCidade').value.trim();
+      const termos = document.getElementById('mvTermos').value.trim();
+      const feedback = document.getElementById('mvSyncFeedback');
+
+      try {
+        const res = await fetch(`${MV_API_BASE}/api/preferencias`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, estado, cidade, termos })
+        });
+        if (res.ok) {
+          feedback.textContent = '💾 Preferências salvas no banco!';
+          showToast('Preferências salvas no SQLite!');
+        }
+      } catch (err) {
+        feedback.textContent = '❌ Não foi possível salvar (API offline).';
+      }
+    }
+
+    async function buscarVagasReaisMonitorVagas() {
+      const email = document.getElementById('mvEmail').value.trim();
+      const estado = document.getElementById('mvEstado').value.trim().toUpperCase() || 'SC';
+      const cidade = document.getElementById('mvCidade').value.trim() || 'Itajaí';
+      const termos = document.getElementById('mvTermos').value.trim() || 'Administrativo';
+      const feedback = document.getElementById('mvSyncFeedback');
+
+      feedback.textContent = `🔍 Buscando vagas reais em ${cidade}-${estado} e calculando ATS + RecruitXray...`;
+      showToast('Iniciando busca de vagas em tempo real...');
+
+      try {
+        const res = await fetch(`${MV_API_BASE}/api/buscar-vagas`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, estado, cidade, termos })
+        });
+        if (!res.ok) throw new Error('Falha na busca');
+        const data = await res.json();
+        window.MV_SCRAPED_JOBS = data.vagas || [];
+
+        const tbody = document.getElementById('jobsTableBody');
+        tbody.innerHTML = window.MV_SCRAPED_JOBS.map((v, idx) => {
+          const score = v.match ? v.match.match_score : 75;
+          const tier = v.match ? v.match.match_tier : 'Forte';
+          const rxBadge = v.recruitxray ? v.recruitxray.badge_label : '🟢 Seguro';
+          const rxClass = v.recruitxray && v.recruitxray.risk_category === 'HIGH'
+            ? 'badge-rose'
+            : (v.recruitxray && v.recruitxray.risk_category === 'MEDIUM' ? 'badge-amber' : 'badge-green');
+
+          return `
+            <tr>
+              <td><span style="color:var(--text-dim); font-size:0.75rem;">#${idx + 1}</span></td>
+              <td><strong style="color:#fff;">${v.empresa || 'Empresa Confidencial'}</strong></td>
+              <td>${v.titulo}</td>
+              <td><span class="badge ${rxClass}">${rxBadge}</span></td>
+              <td style="color:var(--text-muted); font-size:0.8rem;">${v.cidade} (${v.plataforma})</td>
+              <td style="font-family:'JetBrains Mono', monospace; font-size:0.78rem; color:#34d399;">${v.termo}</td>
+              <td><span class="badge badge-cyan">${score}% (${tier})</span></td>
+              <td style="display:flex; gap:0.4rem;">
+                <button class="btn btn-primary btn-sm" style="padding:0.25rem 0.6rem;" onclick="prepararKitDaVaga(${idx})">⚡ Kit IA</button>
+                <a href="${v.link}" target="_blank" class="btn btn-secondary btn-sm" style="padding:0.25rem 0.6rem;">Vaga ↗</a>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+        switchTab('livehunter');
+        feedback.textContent = `✅ ${window.MV_SCRAPED_JOBS.length} vagas reais analisadas! Clique em "⚡ Kit IA" em qualquer vaga.`;
+        showToast(`${window.MV_SCRAPED_JOBS.length} vagas carregadas com Score ATS + RecruitXray!`);
+      } catch (err) {
+        feedback.textContent = '❌ Erro ao buscar vagas (verifique se server.py está rodando na porta 8000).';
+        showToast('Erro ao buscar vagas na API!');
+      }
+    }
+
+    async function prepararKitDaVaga(index) {
+      const vaga = window.MV_SCRAPED_JOBS[index];
+      if (!vaga) return;
+      const email = document.getElementById('mvEmail').value.trim();
+      const termos = document.getElementById('mvTermos').value.trim();
+
+      showToast(`Gerando Kit Injobman + HireMe + RecruitXray para: ${vaga.titulo}...`);
+
+      try {
+        const res = await fetch(`${MV_API_BASE}/api/preparar-candidatura`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...vaga, email, termos })
+        });
+        if (!res.ok) throw new Error('Erro ao preparar kit');
+        const kit = await res.json();
+
+        // 1. Atualiza Job Matcher
+        const jdInput = document.getElementById('matcherJdText');
+        if (jdInput) {
+          jdInput.value = `Cargo: ${vaga.titulo}\nEmpresa: ${vaga.empresa}\nLocal: ${vaga.cidade}\n\nDescrição:\n${vaga.descricao || ''}`;
+        }
+        if (kit.match) {
+          document.getElementById('scoreOverall').textContent = kit.match.match_score + '%';
+          document.getElementById('overallFitBadge').textContent = `${kit.match.match_score}% (${kit.match.match_tier})`;
+          document.getElementById('matchedKeywordsList').innerHTML = (kit.match.matched_keywords || [])
+            .map(m => `<span class="chip chip-green">✓ ${m}</span>`).join('') || '<span class="chip chip-green">✓ Perfil Compatível</span>';
+          document.getElementById('gapKeywordsList').innerHTML = (kit.match.missing_keywords || [])
+            .map(g => `<span class="chip chip-red">✗ ${g}</span>`).join('') || '<span class="chip chip-green">✓ Sem gaps críticos</span>';
+        }
+
+        // 2. Atualiza Injobman (Bullets + Cover Letter)
+        if (kit.injobman) {
+          const outBullets = document.getElementById('transformedBulletOutput');
+          if (outBullets) {
+            outBullets.innerHTML = `<div style="margin-bottom:0.75rem; padding:0.6rem; background:rgba(59,130,246,0.1); border-left:3px solid var(--primary);"><strong>Resumo ATS:</strong> ${kit.injobman.resumo_ats}</div>` +
+              (kit.injobman.bullets_curriculo || []).map(b => `<div style="margin-bottom:0.75rem; padding: 0.5rem; background:rgba(255,255,255,0.02); border-left:2px solid var(--accent-emerald);">${b}</div>`).join('');
+          }
+          if (document.getElementById('clCompany')) document.getElementById('clCompany').value = vaga.empresa || '';
+          if (document.getElementById('clRole')) document.getElementById('clRole').value = vaga.titulo || '';
+          if (document.getElementById('coverLetterOutput')) document.getElementById('coverLetterOutput').textContent = kit.injobman.carta_apresentacao || '';
+        }
+
+        // 3. Atualiza HireMe (Perguntas 80/20 + Scripts de Salário)
+        if (kit.hireme) {
+          const p0 = (kit.hireme.perguntas_80_20 || [])[0];
+          if (p0) {
+            document.getElementById('mockQuestionText').textContent = `"${p0.pergunta}"`;
+            document.getElementById('mockAnswerInput').value = p0.como_responder_star;
+          }
+          if (kit.hireme.scripts_negociacao) {
+            document.getElementById('negotiationScriptTitle').textContent = `Roteiro de Negociação Salarial — ${vaga.titulo} @ ${vaga.empresa}`;
+            document.getElementById('negotiationScriptText').textContent =
+              `1. Pretensão Inicial:\n${kit.hireme.scripts_negociacao.pretensao_inicial}\n\n2. Contraproposta:\n${kit.hireme.scripts_negociacao.contraproposta}`;
+          }
+        }
+
+        // 4. Atualiza RecruitXray se presente na vaga
+        if (vaga.recruitxray) {
+          const rx = vaga.recruitxray;
+          document.getElementById('rxFirmName').value = vaga.empresa || 'Empresa Confidencial';
+          document.getElementById('rxRoleOffer').value = `${vaga.titulo} (${vaga.cidade})`;
+          document.getElementById('rxRiskScoreText').textContent = `${rx.risk_score} / 100`;
+          document.getElementById('rxRiskProgressBar').style.width = `${rx.risk_score}%`;
+          document.getElementById('rxVerdictBadge').textContent = `${rx.badge_label} (${rx.risk_score}/100)`;
+          document.getElementById('rxReportOutput').textContent =
+            `# Auditoria Forense RecruitXray — ${vaga.titulo}\n` +
+            `Empresa: ${vaga.empresa}\nLink: ${vaga.link}\nScore de Risco: ${rx.risk_score}/100 (${rx.badge_label})\n\n` +
+            `## Veredito Direto\n> ${rx.brutal_truth}\n\n` +
+            `## Sinais Positivos\n${(rx.positive_signals || []).map(s => '🟢 ' + s).join('\n') || 'Nenhum'}\n\n` +
+            `## Alertas Detectados (Red Flags)\n${(rx.red_flags || []).map(r => '🚩 ' + r).join('\n') || 'Nenhum sinal de golpe detectado.'}\n\n` +
+            `## Próximos Passos de Segurança\n${(rx.next_steps || []).map(n => '→ ' + n).join('\n')}`;
+        }
+
+        switchTab('injobman');
+        showToast('Kit completo gerado! Confira as abas Injobman, Job Matcher, HireMe e RecruitXray.');
+      } catch (err) {
+        showToast('Erro ao gerar Kit da Vaga.');
+      }
+    }
+
+    // --- INITIALIZATION ---
+    window.addEventListener('DOMContentLoaded', () => {
+      verificarStatusApiMonitorVagas();
+      generateMockQuestion();
+      updateNegotiationScript();
+      renderStarMarkdown();
+      generateMlBlueprint();
+      generateBooleanQuery();
+      renderJobsTable(LIVE_JOBS_DATA);
+      renderComplianceChecklist();
+      updateOptScript();
+      renderEmployerTable(EMPLOYERS_DATA);
+      runRecruiterInvestigation();
+
+      // Accordion click handlers
+      document.querySelectorAll('.accordion-header').forEach(header => {
+        header.addEventListener('click', () => {
+          const item = header.parentElement;
+          item.classList.toggle('open');
+        });
+      });
+    });
+  </script>
+</body>
+</html>

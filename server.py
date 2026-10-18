@@ -1,36 +1,36 @@
+import os
 import sqlite3
+import bcrypt
+import json
 from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
-from typing import Optional
 import database
+from scraper import buscar_vagas_por_parametros
+from job_matcher import analisar_compatibilidade
 
-app = FastAPI()
+app = FastAPI(title="Monitor de Vagas & Career Suite API")
 
 # Inicia o banco de dados e garante que as tabelas existem
 database.init_db()
 
-# Configurando CORS para permitir o React acessar a API
+# Configurando CORS para permitir o Frontend acessar a API
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Permitir Vercel e Localhost
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 DB_NAME = "monitor_vagas.db"
+SUITE_HTML_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "webapp", "public", "suite.html")
 
-import bcrypt
-import json
-import secrets
-
-# Modelos Pydantic para validar os dados
 class UserLogin(BaseModel):
     email: str
     senha: str
 
-# Dependência do Banco de Dados
 def get_db():
     conn = sqlite3.connect(DB_NAME)
     conn.row_factory = sqlite3.Row
@@ -39,10 +39,15 @@ def get_db():
     finally:
         conn.close()
 
-# Rota Básica de Teste
 @app.get("/")
 def root():
-    return {"message": "SaaS Backend Running!"}
+    return {"message": "SaaS Career Engine Backend Running (Web-Only)!", "suite_url": "/suite"}
+
+@app.get("/suite")
+def serve_career_suite():
+    if os.path.exists(SUITE_HTML_PATH):
+        return FileResponse(SUITE_HTML_PATH, media_type="text/html")
+    raise HTTPException(status_code=404, detail="Dashboard index.html não encontrado.")
 
 # Cadastro
 @app.post("/api/cadastro")
@@ -71,7 +76,6 @@ def login(user: UserLogin, db: sqlite3.Connection = Depends(get_db)):
         if not bcrypt.checkpw(user.senha.encode('utf-8'), row['senha'].encode('utf-8')):
             raise HTTPException(status_code=401, detail="E-mail ou senha inválidos.")
     except ValueError:
-        # Se a senha no banco não for um hash válido (conta velha), bloqueia
         raise HTTPException(status_code=401, detail="Conta desatualizada. Crie um novo cadastro.")
     
     return {"message": "Login bem-sucedido!", "email": row['email']}
@@ -85,7 +89,6 @@ async def salvar_curriculo(request: Request, db: sqlite3.Connection = Depends(ge
         raise HTTPException(status_code=400, detail="E-mail não fornecido.")
 
     cursor = db.cursor()
-    # Verifica se já tem um currículo
     cursor.execute("SELECT id FROM curriculos WHERE email = ?", (email,))
     row = cursor.fetchone()
     
@@ -107,72 +110,153 @@ def carregar_curriculo(email: str, db: sqlite3.Connection = Depends(get_db)):
     row = cursor.fetchone()
     
     if not row:
-        return {} # Se não tiver currículo, retorna vazio sem erro
+        return {}
     
     return json.loads(row['dados_json'])
 
-# Gerar Link do Telegram
-@app.get("/api/telegram-link/{email}")
-def gerar_telegram_link(email: str, db: sqlite3.Connection = Depends(get_db)):
-    cursor = db.cursor()
-    cursor.execute("SELECT email, telegram_chat_id FROM usuarios_web WHERE email = ?", (email,))
-    row = cursor.fetchone()
-    
-    if not row:
-        raise HTTPException(status_code=404, detail="Usuário não encontrado.")
-        
-    if row['telegram_chat_id']:
-        # Já está vinculado
-        return {"vinculado": True, "link": "https://t.me/Alerta_e_Busca_Vagas_Bot"}
-        
-    # Gera um token seguro de 8 caracteres
-    token = secrets.token_hex(4).upper()
-    
-    cursor.execute("UPDATE usuarios_web SET telegram_token = ? WHERE email = ?", (token, email))
-    db.commit()
-    
-    # Substitua 'MonitorVagasBot' pelo username real do seu bot
-    deep_link = f"https://t.me/Alerta_e_Busca_Vagas_Bot?start={token}"
-    return {"vinculado": False, "link": deep_link}
-
-# Buscar configurações do Bot
+# Buscar Preferências de Busca de Vagas (Estado, Cidade, Termos)
+@app.get("/api/preferencias/{email}")
 @app.get("/api/bot-config/{email}")
-def get_bot_config(email: str, db: sqlite3.Connection = Depends(get_db)):
+def get_preferencias(email: str, db: sqlite3.Connection = Depends(get_db)):
     cursor = db.cursor()
-    cursor.execute("SELECT telegram_chat_id FROM usuarios_web WHERE email = ?", (email,))
+    cursor.execute("SELECT estado, cidade, termos FROM usuarios_web WHERE email = ?", (email,))
     row = cursor.fetchone()
-    
-    if not row or not row['telegram_chat_id']:
-        return {"vinculado": False}
-        
-    chat_id = row['telegram_chat_id']
-    cursor.execute("SELECT estado, cidade, termos, ativo FROM usuarios WHERE chat_id = ?", (chat_id,))
-    bot_row = cursor.fetchone()
-    
-    if not bot_row:
-        # Cria o perfil padrão se não existir (Ocorrerá no 1º pareamento)
-        cursor.execute("INSERT INTO usuarios (chat_id, estado, cidade, raio, termos, horario_inicio, horario_fim, ativo) VALUES (?, ?, ?, 1, ?, '09:00', '18:00', 1)", (chat_id, '', '', ''))
-        db.commit()
-        return {"vinculado": True, "estado": "", "cidade": "", "termos": "", "ativo": 1}
-        
-    return {"vinculado": True, "estado": bot_row['estado'] or "", "cidade": bot_row['cidade'] or "", "termos": bot_row['termos'] or "", "ativo": bot_row['ativo']}
+    if not row:
+        return {"estado": "", "cidade": "", "termos": ""}
+    return {
+        "estado": row["estado"] or "",
+        "cidade": row["cidade"] or "",
+        "termos": row["termos"] or ""
+    }
 
-# Salvar configurações do Bot
+# Salvar Preferências de Busca de Vagas
+@app.post("/api/preferencias")
 @app.post("/api/bot-config")
-async def save_bot_config(request: Request, db: sqlite3.Connection = Depends(get_db)):
+async def save_preferencias(request: Request, db: sqlite3.Connection = Depends(get_db)):
     data = await request.json()
     email = data.get("email")
+    if not email:
+        raise HTTPException(status_code=400, detail="E-mail não fornecido.")
     cursor = db.cursor()
-    cursor.execute("SELECT telegram_chat_id FROM usuarios_web WHERE email = ?", (email,))
-    row = cursor.fetchone()
-    
-    if row and row['telegram_chat_id']:
-        cursor.execute("UPDATE usuarios SET estado = ?, cidade = ?, termos = ? WHERE chat_id = ?", 
-                      (data.get('estado'), data.get('cidade'), data.get('termos'), row['telegram_chat_id']))
-        db.commit()
-    return {"message": "Configurações do robô salvas!"}
+    cursor.execute(
+        "UPDATE usuarios_web SET estado = ?, cidade = ?, termos = ? WHERE email = ?",
+        (data.get("estado", ""), data.get("cidade", ""), data.get("termos", ""), email)
+    )
+    db.commit()
+    return {"message": "Preferências de busca salvas com sucesso!"}
+
+# Etapa 1: Buscar Vagas ao Vivo + Ranking Automático com Job Matcher ATS Score
+@app.post("/api/buscar-vagas")
+async def api_buscar_vagas(request: Request, db: sqlite3.Connection = Depends(get_db)):
+    data = await request.json()
+    email = data.get("email")
+    estado = data.get("estado", "SC")
+    cidade = data.get("cidade", "Itajaí")
+    termos_raw = data.get("termos", "")
+    curriculo_json = data.get("curriculo")
+
+    if email and not curriculo_json:
+        curriculo_json = database.get_curriculo_by_email(email)
+
+    if email and not termos_raw:
+        cursor = db.cursor()
+        cursor.execute("SELECT estado, cidade, termos FROM usuarios_web WHERE email = ?", (email,))
+        row = cursor.fetchone()
+        if row:
+            estado = estado or row["estado"] or "SC"
+            cidade = cidade or row["cidade"] or "Itajaí"
+            termos_raw = row["termos"] or ""
+
+    termos_lista = [t.strip() for t in termos_raw.split(",") if t.strip()]
+    if not termos_lista:
+        termos_lista = ["Administrativo"]
+
+    vagas = await buscar_vagas_por_parametros(
+        estado=estado,
+        cidade=cidade,
+        termos_busca=termos_lista,
+        raio=1
+    )
+
+    from recruitxray import auditar_vaga_recruitxray
+
+    vagas_enriquecidas = []
+    for vaga in vagas:
+        match_info = analisar_compatibilidade(vaga, curriculo_json=curriculo_json, termos_usuario=termos_raw)
+        xray_info = auditar_vaga_recruitxray(vaga)
+        vagas_enriquecidas.append({
+            **vaga,
+            "match": match_info,
+            "recruitxray": xray_info
+        })
+
+    # Ordena priorizando menor risco de golpe e maior compatibilidade ATS
+    vagas_enriquecidas.sort(
+        key=lambda v: (v["recruitxray"]["risk_category"] == "HIGH", -v["match"]["match_score"])
+    )
+
+    return {
+        "total": len(vagas_enriquecidas),
+        "vagas": vagas_enriquecidas
+    }
+
+# Etapa 1: Analisar Compatibilidade ATS (Job Matcher) entre Currículo e Vaga específica
+@app.post("/api/match-vaga")
+async def match_vaga(request: Request):
+    data = await request.json()
+    email = data.get("email")
+    curriculo_json = data.get("curriculo")
+    termos = data.get("termos", "")
+
+    if not curriculo_json and email:
+        curriculo_json = database.get_curriculo_by_email(email)
+
+    vaga = {
+        "titulo": data.get("titulo", ""),
+        "descricao": data.get("descricao", ""),
+        "nivel": data.get("nivel", ""),
+        "termo": data.get("termo", "")
+    }
+    return analisar_compatibilidade(vaga, curriculo_json=curriculo_json, termos_usuario=termos)
+
+# Etapa 2: Kit de Candidatura (Injobman: Currículo ATS + Carta) e Coaching (HireMe: Entrevista 80/20 + Salário)
+@app.post("/api/preparar-candidatura")
+async def preparar_candidatura(request: Request):
+    from career_coach import gerar_kit_candidatura
+    data = await request.json()
+    email = data.get("email")
+    curriculo_json = data.get("curriculo")
+    termos = data.get("termos", "")
+
+    if not curriculo_json and email:
+        curriculo_json = database.get_curriculo_by_email(email)
+
+    vaga = {
+        "titulo": data.get("titulo", "Profissional"),
+        "empresa": data.get("empresa", "Empresa Contratante"),
+        "cidade": data.get("cidade", "Brasil"),
+        "descricao": data.get("descricao", ""),
+        "nivel": data.get("nivel", ""),
+        "termo": data.get("termo", "")
+    }
+    return gerar_kit_candidatura(vaga, curriculo_json=curriculo_json, termos_usuario=termos)
+
+# Etapa 3: Auditoria Forense de Vaga / Recrutador (RecruitXray)
+@app.post("/api/auditar-vaga")
+async def auditar_vaga(request: Request):
+    from recruitxray import auditar_vaga_recruitxray
+    data = await request.json()
+    vaga = {
+        "titulo": data.get("titulo", ""),
+        "empresa": data.get("empresa", ""),
+        "descricao": data.get("descricao", ""),
+        "link": data.get("link", ""),
+        "plataforma": data.get("plataforma", "")
+    }
+    return auditar_vaga_recruitxray(vaga)
 
 if __name__ == "__main__":
     import uvicorn
-    # Isso só roda se usar `python server.py`. Melhor usar via uvicorn terminal.
     uvicorn.run("server:app", host="0.0.0.0", port=8000, reload=True)
+
+

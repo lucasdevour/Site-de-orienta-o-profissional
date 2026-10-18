@@ -39,10 +39,22 @@ async def buscar_vagas_por_parametros(estado: str, cidade: str, termos_busca: li
                 for card in cards[:3]:
                     titulo = card.text.strip()
                     link = card.get('href')
+                    container = card.find_parent('li') or card.parent
+                    empresa_el = container.find('span', class_='emprVaga') if container else None
+                    detalhes_el = container.find('div', class_='detalhes') if container else None
+                    nivel_el = container.find('span', class_='nivelVaga') if container else None
+
+                    empresa = empresa_el.text.strip() if empresa_el else "Empresa Confidencial"
+                    descricao = detalhes_el.text.strip() if detalhes_el else ""
+                    nivel = nivel_el.text.strip() if nivel_el else ""
+
                     if link and "/vagas/" in link:
                         vagas_encontradas.append({
                             'plataforma': 'Vagas.com.br',
                             'titulo': titulo,
+                            'empresa': empresa,
+                            'descricao': descricao,
+                            'nivel': nivel,
                             'link': f"https://www.vagas.com.br{link}",
                             'cidade': cidade,
                             'termo': termo
@@ -63,10 +75,22 @@ async def buscar_vagas_por_parametros(estado: str, cidade: str, termos_busca: li
                     for card in cards[:2]:
                         titulo = card.text.strip()
                         link = card.get('href')
+                        container = card.find_parent('li') or card.parent
+                        empresa_el = container.find('span', class_='emprVaga') if container else None
+                        detalhes_el = container.find('div', class_='detalhes') if container else None
+                        nivel_el = container.find('span', class_='nivelVaga') if container else None
+
+                        empresa = empresa_el.text.strip() if empresa_el else "Empresa Confidencial"
+                        descricao = detalhes_el.text.strip() if detalhes_el else ""
+                        nivel = nivel_el.text.strip() if nivel_el else ""
+
                         if link and "/vagas/" in link:
                             vagas_encontradas.append({
                                 'plataforma': 'Vagas.com.br (Brasil)',
                                 'titulo': titulo,
+                                'empresa': empresa,
+                                'descricao': descricao,
+                                'nivel': nivel,
                                 'link': f"https://www.vagas.com.br{link}",
                                 'cidade': "Brasil",
                                 'termo': termo
@@ -79,6 +103,9 @@ async def buscar_vagas_por_parametros(estado: str, cidade: str, termos_busca: li
             vagas_encontradas.append({
                 'plataforma': 'Vagas.com.br (Simulação)',
                 'titulo': f'{termo} - Nova Oportunidade',
+                'empresa': 'Empresa Parceira',
+                'descricao': f'Atuação na área de {termo} com foco em resultados, processos e rotinas da função.',
+                'nivel': 'Profissional',
                 'link': f'https://www.vagas.com.br/vagas-de-{termo_formatado}',
                 'cidade': cidade,
                 'termo': termo
