@@ -401,6 +401,53 @@ export default function Robo() {
             {searching ? <Loader2 size={18} className="animate-spin" /> : <Search size={18} />}
             {searching ? 'Buscando vagas reais e calculando seu Match ATS...' : 'Buscar Vagas e Calcular Meu Match Agora'}
           </button>
+
+          {/* Radar Multi-Plataforma Brasil (Live Job Hunter) */}
+          <div style={{
+            marginTop: '1.15rem',
+            paddingTop: '1rem',
+            borderTop: '1px solid var(--border-color)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '0.6rem'
+          }}>
+            <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+              🌐 <strong>Radar Direto nos Portais (Live Job Hunter):</strong> Abrir busca filtrada por <em>"{(buscaConfig.termos || 'Vagas').split(',')[0].trim()}"</em> e colar na Aba 3:
+            </span>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.45rem' }}>
+              {[
+                {
+                  nome: 'Gupy Portal',
+                  url: `https://portal.gupy.io/job-search/term=${encodeURIComponent((buscaConfig.termos || '').split(',')[0].trim())}`
+                },
+                {
+                  nome: 'LinkedIn Brasil',
+                  url: `https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent((buscaConfig.termos || '').split(',')[0].trim())}&location=${encodeURIComponent(`${buscaConfig.cidade || ''} ${buscaConfig.estado || 'Brasil'}`.trim())}`
+                },
+                {
+                  nome: 'InfoJobs',
+                  url: `https://www.infojobs.com.br/empregos.aspx?Palabra=${encodeURIComponent((buscaConfig.termos || '').split(',')[0].trim())}`
+                },
+                {
+                  nome: 'Glassdoor BR',
+                  url: `https://www.glassdoor.com.br/Vaga/brasil-vagas-SRCH_IL.0,6_IN36.htm?sc.keyword=${encodeURIComponent((buscaConfig.termos || '').split(',')[0].trim())}`
+                }
+              ].map((portal) => (
+                <a
+                  key={portal.nome}
+                  href={portal.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="badge badge-blue"
+                  style={{ textDecoration: 'none', padding: '0.35rem 0.7rem', fontSize: '0.75rem' }}
+                >
+                  {portal.nome} <ExternalLink size={11} />
+                </a>
+              ))}
+            </div>
+          </div>
         </div>
       ) : (
         <div className="glass-panel animate-fade-in" style={{ padding: '1.75rem', marginBottom: '2rem' }}>
