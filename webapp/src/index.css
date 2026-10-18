@@ -22,6 +22,8 @@
   --gradient-brand: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
   --gradient-emerald: linear-gradient(135deg, #059669 0%, #10b981 100%);
   --shadow-card: 0 10px 30px -5px rgba(0, 0, 0, 0.45);
+  --radius-md: 12px;
+  --radius-lg: 16px;
 }
 
 * {
@@ -94,13 +96,13 @@ h1, h2, h3, h4 {
   letter-spacing: 0.02em;
 }
 
-.badge-blue {
+.badge-blue, .badge-primary {
   background: rgba(59, 130, 246, 0.15);
   color: #60a5fa;
   border: 1px solid rgba(59, 130, 246, 0.35);
 }
 
-.badge-green {
+.badge-green, .badge-success {
   background: rgba(16, 185, 129, 0.15);
   color: #34d399;
   border: 1px solid rgba(16, 185, 129, 0.35);
@@ -152,6 +154,10 @@ button {
   font-size: 0.95rem;
   font-family: inherit;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.32);
 }
@@ -167,14 +173,23 @@ button:disabled {
   transform: none;
 }
 
-button.secondary {
+button.secondary, button.btn-secondary, a.btn-secondary {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--border-color);
   color: var(--text-primary);
   box-shadow: none;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
 }
 
-button.secondary:hover {
+button.secondary:hover, button.btn-secondary:hover, a.btn-secondary:hover {
   background: rgba(255, 255, 255, 0.09);
   border-color: var(--text-secondary);
 }
@@ -186,6 +201,13 @@ button.btn-emerald {
 
 button.btn-emerald:hover {
   box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
+}
+
+.stepper-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
 }
 
 /* Forms & Inputs */
