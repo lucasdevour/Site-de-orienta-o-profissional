@@ -28,7 +28,7 @@ export default function Curriculos() {
             Monte seu currículo principal com auxílio da IA e exporte em PDF ou Word (.docx). Para criar versões sob medida para uma vaga específica, acesse a central de Vagas & Match.
           </p>
         </div>
-        <Link to="/robo" className="btn-secondary" style={{ textDecoration: 'none' }}>
+        <Link to="/app/robo" className="btn-secondary" style={{ textDecoration: 'none' }}>
           <Briefcase size={16} /> Ir para Vagas & Match
         </Link>
       </div>

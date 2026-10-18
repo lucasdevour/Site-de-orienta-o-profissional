@@ -7,8 +7,9 @@ const API_URL = 'https://site-de-orienta-o-profissional-1.onrender.com/api';
 const INICIAL_DATA = {
   nome: '', idade: '', nacionalidade: 'Brasileiro(a)', estado_civil: 'Solteiro(a)',
   rua: '', numero: '', complemento: '', bairro: '', cidade: '', estado: '',
-  tel1: '', tel2: '', email: '', cnh: '',
-  situacao: '', busca: '', nivel_estudo: '', exp_area: '', objetivo: '', formacao: '',
+  tel1: '', tel2: '', email: '', linkedin: '', cnh: '',
+  situacao: '', busca: '', nivel_estudo: '', exp_area: '',
+  objetivo: '', resumo: '', habilidades: '', formacao: '', idiomas: '',
   empresa1: '', periodo1: '', cargo1: '', funcoes1: '',
   empresa2: '', periodo2: '', cargo2: '', funcoes2: '',
   empresa3: '', periodo3: '', cargo3: '', funcoes3: '',
@@ -31,10 +32,10 @@ export function calcularForcaCurriculo(dados) {
     dicas.push('Defina seu Objetivo Profissional (cargo alvo).');
   }
 
-  if (dados.formacao && dados.formacao.trim().length >= 8) {
+  if ((dados.resumo && dados.resumo.trim().length >= 20) || (dados.habilidades && dados.habilidades.trim().length >= 8)) {
     pontos += 20;
   } else {
-    dicas.push('Adicione sua Formação Acadêmica.');
+    dicas.push('Adicione seu Resumo Profissional ATS e suas Habilidades Técnicas.');
   }
 
   if (dados.cargo1 && dados.funcoes1 && dados.funcoes1.trim().length >= 15) {
@@ -43,10 +44,10 @@ export function calcularForcaCurriculo(dados) {
     dicas.push('Descreva pelo menos 1 experiência ou vivência prática detalhada.');
   }
 
-  if ((dados.cursos && dados.cursos.trim().length >= 5) || (dados.adicionais && dados.adicionais.trim().length >= 5)) {
+  if ((dados.formacao && dados.formacao.trim().length >= 8) || (dados.cursos && dados.cursos.trim().length >= 5)) {
     pontos += 15;
   } else {
-    dicas.push('Inclua cursos, certificações ou habilidades extras para ganhar pontos no ATS.');
+    dicas.push('Inclua sua Formação Acadêmica e cursos/certificações.');
   }
 
   return { score: Math.min(100, pontos), dicas };
@@ -275,6 +276,28 @@ export default function Dashboard() {
             <label>Bairro</label>
             <input type="text" name="bairro" value={formData.bairro} onChange={handleChange} placeholder="Ex: Centro" />
           </div>
+        </div>
+
+        <div className="input-group">
+          <label>Resumo Profissional ATS (Usado pela IA no Cálculo de Match)</label>
+          <textarea
+            name="resumo"
+            value={formData.resumo || ''}
+            onChange={handleChange}
+            rows="2"
+            placeholder="Ex: Profissional com experiência na área administrativa, atendimento ao cliente, controle de planilhas e foco em resultados..."
+          />
+        </div>
+
+        <div className="input-group">
+          <label>Principais Habilidades e Ferramentas (Separadas por vírgula)</label>
+          <input
+            type="text"
+            name="habilidades"
+            value={formData.habilidades || ''}
+            onChange={handleChange}
+            placeholder="Ex: Excel, Atendimento ao Cliente, Gestão de Rotinas, Pacote Office, Negociação"
+          />
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginTop: '1rem' }}>
